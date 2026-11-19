@@ -1,0 +1,5738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="theme-color" content="#ffc4e1">
+  <meta name="description" content="有一些话，只想说给你听。">
+
+  <!-- 微信分享卡片：og:image 必须换成 GitHub Pages 上的绝对地址（见文件末尾部署说明） -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="属于她的小网站">
+  <meta property="og:description" content="有一些话，只想说给你听。">
+  <meta property="og:image" content="https://your-domain.com/cover.jpg">
+
+  <title>属于她的小网站</title>
+
+  <style>
+    :root {
+      --app-h: 100dvh;
+      --pink-50: #fff7fb;
+      --pink-100: #ffe3ef;
+      --pink-200: #ffc4e1;
+      --pink-300: #ff9ecb;
+      --pink-400: #ff7ab8;
+      --pink-500: #ff69b4;
+      --pink-600: #e94f9c;
+      --ink: #5a3145;
+      --ink-soft: #94647c;
+      --card: rgba(255, 255, 255, 0.88);
+      --shadow: 0 18px 40px rgba(201, 79, 134, 0.18);
+      --shadow-soft: 0 8px 20px rgba(201, 79, 134, 0.12);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+
+    body {
+      color: var(--ink);
+      background:
+        radial-gradient(120% 80% at 50% 0%, #fff9fc 0%, #ffeaf4 40%, #ffc4e1 100%);
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+        "STKaiti", "KaiTi", "Noto Sans CJK SC", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      touch-action: manipulation;
+      user-select: none;
+    }
+
+    button,
+    input {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      border: 0;
+      background: none;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .app {
+      position: relative;
+      width: 100%;
+      height: var(--app-h);
+      overflow: hidden;
+    }
+
+    @media (min-width: 560px) {
+      body {
+        background: #ffd6e9;
+      }
+
+      .app {
+        max-width: 480px;
+        margin: 0 auto;
+        box-shadow: 0 30px 80px rgba(120, 30, 70, 0.22);
+      }
+    }
+
+    /* ---------------- 背景漂浮的小心心 ---------------- */
+    .bg-hearts {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .bg-heart {
+      position: absolute;
+      bottom: -40px;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 14px;
+      animation: floatUp linear infinite;
+      opacity: 0;
+      text-shadow: 0 2px 6px rgba(233, 79, 156, 0.18);
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(0.7) rotate(0deg);
+        opacity: 0;
+      }
+      12% {
+        opacity: 0.9;
+      }
+      85% {
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateY(-110vh) scale(1.1) rotate(18deg);
+        opacity: 0;
+      }
+    }
+
+    /* ---------------- 屏幕切换 ---------------- */
+    .screen {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      padding:
+        max(20px, env(safe-area-inset-top))
+        max(20px, env(safe-area-inset-right))
+        max(22px, env(safe-area-inset-bottom))
+        max(20px, env(safe-area-inset-left));
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition:
+        opacity 0.4s ease,
+        transform 0.4s ease,
+        visibility 0s linear 0.4s;
+      pointer-events: none;
+    }
+
+    .screen.is-active {
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      transition:
+        opacity 0.4s ease,
+        transform 0.4s ease,
+        visibility 0s linear 0s;
+      pointer-events: auto;
+      z-index: 2;
+    }
+
+    /* ---------------- 通用按钮 ---------------- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 0 22px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition:
+        transform 0.16s ease,
+        box-shadow 0.16s ease,
+        background 0.16s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, #ff8fc4 0%, #ff69b4 55%, #f2569f 100%);
+      box-shadow: 0 10px 24px rgba(242, 86, 159, 0.32);
+    }
+
+    .btn-ghost {
+      color: var(--pink-600);
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(255, 158, 203, 0.35);
+    }
+
+    .btn-text {
+      min-height: 44px;
+      color: var(--ink-soft);
+      font-size: 14px;
+      font-weight: 500;
+      background: transparent;
+    }
+
+    .btn-light {
+      color: #7a2048;
+      background: #ffe3ef;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+    }
+
+    .btn-ghost-light {
+      color: #ffd9ea;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+    }
+
+    /* ---------------- 首页 ---------------- */
+    .home {
+      justify-content: flex-start;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .home-top {
+      padding-top: 6px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--ink-soft);
+      font-size: 12px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+    }
+
+    .timer-title {
+      margin: 0;
+      color: var(--ink);
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+    }
+
+    .timer-days {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 6px;
+      margin: 2px 0 6px;
+      color: var(--pink-600);
+    }
+
+    .timer-days strong {
+      font-size: clamp(56px, 17vw, 76px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 8px 22px rgba(242, 86, 159, 0.24);
+    }
+
+    .timer-unit {
+      margin-left: 2px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--pink-500);
+    }
+
+    .timer-date {
+      margin: 6px 0 0;
+      color: var(--ink-soft);
+      font-size: 12.5px;
+      letter-spacing: 0.08em;
+    }
+
+    .home-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 6px 0;
+    }
+
+    .polaroid {
+      position: relative;
+      width: min(62vw, 240px);
+      padding: 10px 10px 34px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 16px 34px rgba(160, 60, 110, 0.2);
+      transform: rotate(-2.2deg);
+      transition: transform 0.4s ease;
+    }
+
+    .polaroid::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      width: 74px;
+      height: 20px;
+      margin-left: -37px;
+      background: rgba(255, 196, 225, 0.6);
+      border-radius: 3px;
+      transform: rotate(-3deg);
+      box-shadow: 0 2px 4px rgba(160, 60, 110, 0.1);
+    }
+
+    .polaroid:active {
+      transform: rotate(0deg) scale(0.99);
+    }
+
+    .photo {
+      overflow: hidden;
+      border-radius: 8px;
+      aspect-ratio: 4 / 5;
+      background: linear-gradient(150deg, #ffe9f3, #ffc4e1 60%, #ff9ecb);
+    }
+
+    .photo svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .caption {
+      position: absolute;
+      right: 0;
+      bottom: 10px;
+      left: 0;
+      margin: 0;
+      color: #a05b7c;
+      font-family: "STKaiti", "KaiTi", "PingFang SC", serif;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+    }
+
+    .love-line {
+      max-width: 290px;
+      min-height: 40px;
+      margin: 0;
+      padding: 0 10px;
+      color: var(--ink-soft);
+      font-family: "STKaiti", "KaiTi", "PingFang SC", serif;
+      font-size: 14.5px;
+      line-height: 1.7;
+      letter-spacing: 0.04em;
+    }
+
+    .home-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .since {
+      margin: 2px 0 0;
+      color: rgba(148, 100, 124, 0.7);
+      font-size: 11px;
+      letter-spacing: 0.24em;
+    }
+
+    /* ---------------- 首页留言卡 / 预留模块 ---------------- */
+    body.chat-focus .home-top,
+    body.chat-focus .future {
+      display: none;
+    }
+
+    body.chat-focus .chat-card {
+      flex: 1 1 auto;
+      height: auto;
+      max-height: none;
+    }
+
+    body.chat-focus .music-btn {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .chat-card {
+      display: flex;
+      flex: 0 1 auto;
+      flex-direction: column;
+      height: 44vh;
+      max-height: 380px;
+      min-height: 220px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
+      text-align: left;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .chat-card-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 16px 8px;
+    }
+
+    .chat-card-head h2 {
+      flex: 1;
+      margin: 0;
+      color: var(--ink);
+      font-size: 14.5px;
+      font-weight: 600;
+      line-height: 1.5;
+      letter-spacing: 0.02em;
+      text-align: left;
+    }
+
+    .chat-card .chat-list {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 4px 14px 8px;
+    }
+
+    .chat-card .chat-form {
+      padding: 8px 10px 10px;
+      background: transparent;
+      border-top: 1px dashed rgba(255, 158, 203, 0.32);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .chat-card .bubble {
+      font-size: 14px;
+    }
+
+    .chat-card .chat-row {
+      margin-bottom: 10px;
+    }
+
+    /* 折叠态：只留输入框和绿点 */
+    .chat-card.is-collapsed {
+      flex: 0 0 auto;
+      height: auto;
+      min-height: 0;
+    }
+
+    .chat-card.is-collapsed .chat-card-head,
+    .chat-card.is-collapsed .chat-list {
+      display: none;
+    }
+
+    .chat-card.is-collapsed .chat-form {
+      padding: 10px 10px 10px;
+      border-top: 0;
+    }
+
+    .chat-dot-btn {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 46px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .chat-form .chat-dot-btn {
+      flex: 0 0 auto;
+      width: 40px;
+      min-width: 0;
+      height: 46px;
+      padding: 0;
+      border-radius: 0;
+      color: inherit;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .chat-dot {
+      width: 9px;
+      height: 9px;
+      margin: 0;
+      border-radius: 50%;
+      background: #6ad4a0;
+      box-shadow: 0 0 0 4px rgba(106, 212, 160, 0.18);
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .chat-card:not(.is-collapsed) .chat-dot {
+      transform: scale(1.15);
+      box-shadow: 0 0 0 5px rgba(106, 212, 160, 0.22);
+    }
+
+    .home-footer {
+      flex: 0 0 auto;
+      margin: 2px 0 0;
+      padding: 0 6px;
+      color: rgba(148, 100, 124, 0.72);
+      font-size: 10.5px;
+      line-height: 1.8;
+      letter-spacing: 0.02em;
+      text-align: center;
+    }
+
+    .future {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      gap: 8px;
+      padding-bottom: 2px;
+      text-align: left;
+    }
+
+    .future-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+    }
+
+    .future-label {
+      color: var(--ink-soft);
+      font-size: 11px;
+      letter-spacing: 0.24em;
+    }
+
+    .future-link {
+      min-height: 32px;
+      padding: 0 2px;
+      color: var(--pink-600);
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .module-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 64px;
+      padding: 12px 16px;
+      border-radius: 18px;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .module-card:active {
+      transform: scale(0.985);
+    }
+
+    .module-index {
+      display: grid;
+      place-items: center;
+      min-width: 34px;
+      height: 28px;
+      border-radius: 9px;
+      color: var(--pink-600);
+      background: rgba(255, 196, 225, 0.4);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .module-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .module-body strong {
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .module-body small {
+      color: var(--ink-soft);
+      font-size: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    .module-arrow {
+      color: var(--pink-400);
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .module-ghost {
+      display: grid;
+      flex: 1 1 auto;
+      place-items: center;
+      min-height: 60px;
+      border: 1px dashed rgba(255, 158, 203, 0.45);
+      border-radius: 16px;
+      color: rgba(148, 100, 124, 0.6);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+    }
+
+    /* ---------------- 生日烟花页 ---------------- */
+    .birthday {
+      padding: 0;
+      background:
+        radial-gradient(90% 60% at 50% 18%, #6b1640 0%, #3a0b24 45%, #1a0410 100%);
+      color: #ffe6f2;
+      overflow: hidden;
+    }
+
+    .birthday-inner {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding:
+        max(40px, env(safe-area-inset-top))
+        26px
+        max(30px, env(safe-area-inset-bottom));
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .birthday-inner > * {
+      pointer-events: auto;
+    }
+
+    .bd-date {
+      margin: 0 0 10px;
+      color: rgba(255, 214, 232, 0.72);
+      font-size: 12px;
+      letter-spacing: 0.5em;
+    }
+
+    .bd-title {
+      margin: 0;
+      font-family: "STKaiti", "KaiTi", "PingFang SC", serif;
+      font-size: clamp(40px, 12vw, 54px);
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: 0.06em;
+      text-shadow:
+        0 0 18px rgba(255, 105, 180, 0.55),
+        0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .bd-title span {
+      color: #ffb3d6;
+    }
+
+    .bd-text {
+      max-width: 280px;
+      margin: 18px 0 26px;
+      color: rgba(255, 230, 242, 0.86);
+      font-size: 15px;
+      line-height: 1.9;
+      letter-spacing: 0.04em;
+    }
+
+    .bd-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: min(240px, 80vw);
+    }
+
+    .bd-hint {
+      min-height: 20px;
+      margin: 18px 0 0;
+      color: rgba(255, 214, 232, 0.62);
+      font-size: 12.5px;
+      letter-spacing: 0.06em;
+    }
+
+    /* 嵌套生日站 */
+    .birthday {
+      padding: 0;
+      overflow: hidden;
+      background: #f5f1ff;
+    }
+
+    .birthday-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+
+    .frame-back {
+      position: absolute;
+      top: max(12px, env(safe-area-inset-top));
+      left: max(12px, env(safe-area-inset-left));
+      z-index: 20;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      color: #7a2048;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      box-shadow: var(--shadow-soft);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .frame-back:active {
+      transform: scale(0.96);
+    }
+
+    /* ---------------- 生理期 / 惊喜 面板 ---------------- */
+    .period,
+    .surprise {
+      justify-content: center;
+      align-items: center;
+      background:
+        radial-gradient(100% 70% at 50% 0%, #fff8fc 0%, #ffe3ef 45%, #ffc4e1 100%);
+    }
+
+    .panel {
+      width: min(100%, 340px);
+      padding: 30px 24px 24px;
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      text-align: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      animation: panelIn 0.5s ease both;
+    }
+
+    @keyframes panelIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .period-emoji {
+      width: 84px;
+      height: 84px;
+      margin: 0 auto 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(160deg, #fff, #ffe3ef);
+      border-radius: 50%;
+      font-size: 42px;
+      box-shadow: 0 10px 24px rgba(201, 79, 134, 0.16);
+      animation: breathe 3.2s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%,
+      100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.06);
+      }
+    }
+
+    .panel h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.5;
+      letter-spacing: 0.04em;
+    }
+
+    .period-sub,
+    .panel-sub {
+      margin: 0 0 18px;
+      color: var(--ink-soft);
+      font-size: 13.5px;
+      line-height: 1.7;
+    }
+
+    .tips {
+      margin: 0 0 22px;
+      padding: 0;
+      list-style: none;
+      text-align: left;
+    }
+
+    .tips li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      margin-bottom: 8px;
+      background: rgba(255, 227, 239, 0.62);
+      border-radius: 14px;
+      color: #6f3f58;
+      font-size: 14px;
+    }
+
+    .tips li span {
+      font-size: 18px;
+    }
+
+    .panel .btn {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .panel .btn + .btn {
+      margin-top: 6px;
+    }
+
+    .surprise-tag {
+      display: inline-block;
+      margin: 0 0 12px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      color: var(--pink-600);
+      background: rgba(255, 196, 225, 0.45);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+    }
+
+    .surprise h2 {
+      font-size: 22px;
+    }
+
+    .surprise-body {
+      margin: 0 0 22px;
+      color: #6f3f58;
+      font-family: "STKaiti", "KaiTi", "PingFang SC", serif;
+      font-size: 17px;
+      line-height: 1.9;
+      letter-spacing: 0.03em;
+    }
+
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 4px 0 18px;
+    }
+
+    .countdown b {
+      min-width: 54px;
+      padding: 8px 4px;
+      border-radius: 14px;
+      color: var(--pink-600);
+      background: rgba(255, 227, 239, 0.8);
+      font-size: 26px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .countdown small {
+      display: block;
+      margin-top: 2px;
+      color: var(--ink-soft);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+    }
+
+    /* ---------------- 生日年册 ---------------- */
+    .birthdays {
+      padding: 0;
+      background:
+        radial-gradient(120% 70% at 50% 0%, #fff9fc 0%, #ffeaf4 50%, #ffd6e9 100%);
+    }
+
+    .sub-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding:
+        max(12px, env(safe-area-inset-top))
+        16px
+        12px;
+      background: rgba(255, 255, 255, 0.74);
+      border-bottom: 1px solid rgba(255, 158, 203, 0.22);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .sub-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+
+    .sub-title span {
+      color: var(--ink-soft);
+      font-size: 10.5px;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+    }
+
+    .birthday-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 18px 16px 8px;
+    }
+
+    .bd-cell {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      aspect-ratio: 1;
+      padding: 10px 6px;
+      border: 1.5px solid rgba(255, 158, 203, 0.35);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: var(--shadow-soft);
+      text-align: center;
+      transition:
+        transform 0.16s ease,
+        box-shadow 0.16s ease;
+    }
+
+    .bd-cell:active {
+      transform: scale(0.96);
+    }
+
+    .bd-cell.is-active {
+      color: #7a2048;
+      background: linear-gradient(160deg, #fff 0%, #ffe3ef 70%, #ffd0e5 100%);
+      border-color: var(--pink-400);
+      box-shadow: 0 12px 26px rgba(242, 86, 159, 0.24);
+    }
+
+    .bd-cell.is-locked {
+      color: rgba(148, 100, 124, 0.55);
+      background: rgba(255, 255, 255, 0.5);
+      border-style: dashed;
+      border-color: rgba(255, 158, 203, 0.32);
+      box-shadow: none;
+    }
+
+    .bd-cell-emoji {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .bd-cell-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      line-height: 1.45;
+      letter-spacing: 0.01em;
+    }
+
+    .bd-cell-year {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      opacity: 0.7;
+    }
+
+    .grid-note {
+      margin: 10px 20px 0;
+      color: rgba(148, 100, 124, 0.66);
+      font-size: 10.5px;
+      letter-spacing: 0.08em;
+      text-align: center;
+    }
+
+    /* ---------------- 留言板 ---------------- */
+    .chat {
+      padding: 0;
+      background:
+        radial-gradient(120% 70% at 50% 0%, #fff9fc 0%, #ffeaf4 50%, #ffd6e9 100%);
+    }
+
+    .chat-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding:
+        max(12px, env(safe-area-inset-top))
+        16px
+        12px;
+      background: rgba(255, 255, 255, 0.78);
+      border-bottom: 1px solid rgba(255, 158, 203, 0.22);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .icon-btn {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      margin-left: -8px;
+      border-radius: 50%;
+      color: var(--pink-600);
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .chat-title {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+
+    .chat-title span {
+      color: var(--ink-soft);
+      font-size: 10.5px;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+    }
+
+    .chat-dot {
+      width: 8px;
+      height: 8px;
+      margin-left: auto;
+      border-radius: 50%;
+      background: #6ad4a0;
+      box-shadow: 0 0 0 4px rgba(106, 212, 160, 0.18);
+    }
+
+    .chat-list {
+      position: relative;
+      flex: 1;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 18px 16px 12px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .chat-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      margin-bottom: 14px;
+      animation: bubbleIn 0.32s ease both;
+    }
+
+    .chat-row.user {
+      justify-content: flex-end;
+    }
+
+    @keyframes bubbleIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .avatar {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: var(--shadow-soft);
+      font-size: 17px;
+    }
+
+    .bubble {
+      max-width: 74%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 15px;
+      line-height: 1.65;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .bot .bubble {
+      border-bottom-left-radius: 5px;
+      color: #5a3145;
+      background: #fff;
+      box-shadow: 0 6px 14px rgba(201, 79, 134, 0.1);
+    }
+
+    .user .bubble {
+      border-bottom-right-radius: 5px;
+      color: #fff;
+      background: linear-gradient(135deg, #ff9ecb, #ff69b4);
+      box-shadow: 0 8px 18px rgba(242, 86, 159, 0.26);
+    }
+
+    .system {
+      display: block;
+      width: fit-content;
+      margin: 4px auto 18px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      color: #9a6b82;
+      background: rgba(255, 255, 255, 0.66);
+      font-size: 12.5px;
+      line-height: 1.5;
+      text-align: center;
+      animation: bubbleIn 0.32s ease both;
+    }
+
+    .chat-form {
+      display: flex;
+      gap: 8px;
+      padding:
+        10px 14px
+        max(12px, env(safe-area-inset-bottom));
+      background: rgba(255, 255, 255, 0.84);
+      border-top: 1px solid rgba(255, 158, 203, 0.22);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .chat-form input {
+      flex: 1;
+      min-width: 0;
+      height: 46px;
+      padding: 0 16px;
+      border: 1px solid rgba(255, 158, 203, 0.35);
+      border-radius: 999px;
+      outline: none;
+      color: var(--ink);
+      background: #fff;
+      font-size: 16px;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    .chat-form input:focus {
+      border-color: var(--pink-400);
+      box-shadow: 0 0 0 3px rgba(255, 158, 203, 0.18);
+    }
+
+    .chat-form button {
+      flex: 0 0 auto;
+      min-width: 72px;
+      height: 46px;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, #ff9ecb, #ff69b4);
+      font-size: 15px;
+      font-weight: 600;
+      box-shadow: 0 8px 18px rgba(242, 86, 159, 0.26);
+    }
+
+    /* ---------------- 每日弹窗 ---------------- */
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(90, 30, 60, 0.32);
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        opacity 0.3s ease,
+        visibility 0s linear 0.3s;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .modal.is-open {
+      opacity: 1;
+      visibility: visible;
+      transition:
+        opacity 0.3s ease,
+        visibility 0s linear 0s;
+    }
+
+    .modal-card {
+      width: min(100%, 320px);
+      padding: 30px 24px 20px;
+      border-radius: 26px;
+      background: linear-gradient(180deg, #fffdfe 0%, #fff4f9 100%);
+      box-shadow: 0 30px 70px rgba(120, 30, 70, 0.28);
+      text-align: center;
+      transform: translateY(16px) scale(0.96);
+      transition: transform 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+    }
+
+    .modal.is-open .modal-card {
+      transform: none;
+    }
+
+    .modal-emoji {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 14px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(160deg, #ffe3ef, #ffc4e1);
+      font-size: 34px;
+      box-shadow: 0 10px 24px rgba(201, 79, 134, 0.18);
+    }
+
+    .modal-card h3 {
+      margin: 0 0 10px;
+      font-size: 19px;
+      letter-spacing: 0.04em;
+    }
+
+    .modal-card p {
+      margin: 0 0 22px;
+      color: #7c4c63;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-actions .btn {
+      flex: 1;
+      min-height: 48px;
+    }
+
+    .modal-note {
+      margin: 14px 0 0 !important;
+      color: #b18a9c !important;
+      font-size: 11px !important;
+      letter-spacing: 0.08em;
+    }
+
+    /* ---------------- 音乐按钮 / toast ---------------- */
+    .music-btn {
+      position: absolute;
+      top: max(14px, env(safe-area-inset-top));
+      right: max(14px, env(safe-area-inset-right));
+      z-index: 30;
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      color: var(--pink-600);
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: var(--shadow-soft);
+      font-size: 18px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: opacity 0.2s ease, transform 0.16s ease;
+    }
+
+    .music-btn:active {
+      transform: scale(0.92);
+    }
+
+    .music-btn.is-off {
+      color: #b18a9c;
+      opacity: 0.62;
+    }
+
+    /* 留言板与烟花页不需要音乐按钮，避免压住标题栏 */
+    body[data-screen="chat"] .music-btn,
+    body[data-screen="birthday"] .music-btn {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(max(24px, env(safe-area-inset-bottom)) + 8px);
+      z-index: 50;
+      max-width: 78vw;
+      padding: 9px 16px;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(90, 30, 60, 0.82);
+      font-size: 12.5px;
+      line-height: 1.5;
+      text-align: center;
+      opacity: 0;
+      transform: translate(-50%, 8px);
+      transition: opacity 0.24s ease, transform 0.24s ease;
+      pointer-events: none;
+    }
+
+    .toast.is-show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* 聊天里飘出的爱心 */
+    .fx-heart {
+      position: absolute;
+      z-index: 5;
+      font-size: 18px;
+      pointer-events: none;
+      animation: fxFloat 1.4s ease-out forwards;
+    }
+
+    @keyframes fxFloat {
+      0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.6);
+      }
+      20% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--dx, 0), -110px) scale(1.2) rotate(12deg);
+      }
+    }
+
+    @media (max-height: 620px) {
+      .polaroid {
+        width: min(46vw, 180px);
+      }
+      .timer-days strong {
+        font-size: 52px;
+      }
+      .love-line {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app" id="app">
+    <div class="bg-hearts" id="bgHearts" aria-hidden="true"></div>
+
+    <!-- ========== 首页 ========== -->
+    <section class="screen home is-active" id="screen-home" data-screen="home">
+      <div class="home-top">
+        <p class="eyebrow">FOR MY GIRL</p>
+        <h1 class="timer-title">我们已经在一起</h1>
+        <div class="timer-days">
+          <strong id="days">0</strong>
+          <span class="timer-unit">天</span>
+        </div>
+        <p class="timer-date" id="timerDate">从 2026 年 11 月 16 日开始</p>
+      </div>
+
+      <section class="chat-card is-collapsed" id="chatCard" aria-label="留言板">
+        <header class="chat-card-head">
+          <h2>想对我说的话可以留在这里哦~</h2>
+        </header>
+        <div class="chat-list" id="chatList"></div>
+        <form class="chat-form" id="chatForm">
+          <button class="chat-dot-btn" id="chatToggle" type="button" aria-label="展开留言">
+            <span class="chat-dot" aria-hidden="true"></span>
+          </button>
+          <input
+            id="chatInput"
+            type="text"
+            maxlength="60"
+            placeholder="想对我说点什么…"
+            autocomplete="off"
+            aria-label="留言内容"
+          />
+          <button id="sendBtn" type="submit">发送</button>
+        </form>
+      </section>
+
+      <section class="future" aria-label="接下来">
+        <div class="future-head">
+          <span class="future-label">接下来</span>
+          <button class="future-link" id="surpriseBtn" type="button">今日小惊喜 →</button>
+        </div>
+
+        <button class="module-card" id="birthdayModule" type="button">
+          <span class="module-index">01</span>
+          <span class="module-body">
+            <strong>生日纪念</strong>
+            <small id="birthdayCountdown">距离下一次生日还有 -- 天</small>
+          </span>
+          <span class="module-arrow" aria-hidden="true">›</span>
+        </button>
+
+        <div class="module-ghost">更多模块 · 正在准备中</div>
+      </section>
+
+      <p class="home-footer">
+        本网站是由你男朋友亲自开发并维护，只属于lyq一个人的小网站哦~<br />
+        还想要什么可以留言或者直接给我发消息哦~
+      </p>
+    </section>
+
+    <!-- ========== 生日惊喜（嵌套生日站） ========== -->
+    <section class="screen birthday" id="screen-birthday" data-screen="birthday">
+      <iframe
+        id="birthdayFrame"
+        class="birthday-frame"
+        data-src="birthday.html"
+        title="生日惊喜"
+      ></iframe>
+      <button class="frame-back" type="button" data-back aria-label="返回">‹ 返回</button>
+    </section>
+
+    <!-- ========== 生日年册（正方形格子） ========== -->
+    <section class="screen birthdays" id="screen-birthdays" data-screen="birthdays">
+      <header class="sub-head">
+        <button class="icon-btn" type="button" data-back aria-label="返回">‹</button>
+        <div class="sub-title">陪你过的生日<span>一年一格，慢慢填满</span></div>
+      </header>
+      <div class="birthday-grid" id="birthdayGrid"></div>
+      <p class="grid-note">每一格都是一年，点开就是那一年的惊喜。</p>
+    </section>
+
+    <!-- ========== 生理期关怀页 ========== -->
+    <section class="screen period" id="screen-period" data-screen="period">
+      <div class="panel">
+        <div class="period-emoji" aria-hidden="true">🧸</div>
+        <h2>这几天要照顾好自己哦</h2>
+        <p class="period-sub">不许逞强，也不许偷偷喝冰的。</p>
+        <ul class="tips">
+          <li><span aria-hidden="true">🌡️</span>热水袋敷一敷肚子，会舒服很多</li>
+          <li><span aria-hidden="true">🍵</span>红糖姜茶比奶茶管用</li>
+          <li><span aria-hidden="true">🛌</span>困了就睡，别硬撑着回消息</li>
+          <li><span aria-hidden="true">📱</span>不舒服随时找我，我都在</li>
+        </ul>
+        <button class="btn btn-primary" id="hugBtn" type="button">要一个抱抱</button>
+        <button class="btn btn-text" type="button" data-back>回到主页</button>
+      </div>
+    </section>
+
+    <!-- ========== 每日小惊喜 ========== -->
+    <section class="screen surprise" id="screen-surprise" data-screen="surprise">
+      <div class="panel">
+        <p class="surprise-tag" id="surpriseTag">今日任务</p>
+        <h2 id="surpriseTitle">给今天留一点小期待</h2>
+        <div id="surpriseBody"></div>
+        <div class="surprise-actions">
+          <button class="btn btn-primary" id="rerollBtn" type="button">换一个</button>
+          <button class="btn btn-text" type="button" data-back>回到主页</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 每日弹窗 ========== -->
+    <div class="modal" id="modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-emoji" id="modalEmoji" aria-hidden="true">💌</div>
+        <h3 id="modalTitle">今天也想你啦</h3>
+        <p id="modalText">要不要收下今天的小惊喜？</p>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="modalNo" type="button">否</button>
+          <button class="btn btn-primary" id="modalYes" type="button">是</button>
+        </div>
+        <p class="modal-note">今天只会有这一条问候</p>
+      </div>
+    </div>
+
+    <button class="music-btn" id="musicBtn" type="button" aria-label="音乐开关">
+      <span id="musicIcon" aria-hidden="true">♪</span>
+    </button>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <script type="text/plain" id="birthdayDoc">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f1ff">
+  <link rel="icon" href="data:,">
+  <title>生日快乐哦～</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      color: #40364f;
+      background: linear-gradient(180deg, #f5f1ff 0%, #ffffff 100%);
+      font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .page {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding:
+        max(24px, env(safe-area-inset-top))
+        max(20px, env(safe-area-inset-right))
+        max(24px, env(safe-area-inset-bottom))
+        max(20px, env(safe-area-inset-left));
+    }
+
+    .birthday-card {
+      width: 100%;
+      max-width: 340px;
+      padding: 38px 24px 32px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow:
+        0 18px 50px rgba(95, 72, 130, 0.12),
+        0 4px 14px rgba(95, 72, 130, 0.06);
+      opacity: 1;
+      visibility: visible;
+      transition:
+        opacity 0.8s ease,
+        visibility 0s linear 0s;
+    }
+
+    .cake-icon {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 18px;
+    }
+
+    .cake-icon svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .birthday-card h1 {
+      margin: 0;
+      color: #443653;
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: 1px;
+    }
+
+    .subtitle {
+      margin: 12px 0 30px;
+      color: #85788f;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .surprise-button {
+      min-width: 168px;
+      min-height: 48px;
+      padding: 0 30px;
+      border: 0;
+      border-radius: 999px;
+      color: #ffffff;
+      background: linear-gradient(90deg, #ff7aa2 0%, #ff4d7e 100%);
+      box-shadow: 0 8px 20px rgba(255, 77, 126, 0.25);
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 48px;
+      white-space: nowrap;
+      user-select: none;
+      touch-action: manipulation;
+      transform: scale(1);
+      transition:
+        transform 0.16s ease,
+        box-shadow 0.16s ease;
+    }
+
+    .surprise-button:hover {
+      box-shadow: 0 10px 24px rgba(255, 77, 126, 0.32);
+    }
+
+    .surprise-button:active {
+      transform: scale(0.93);
+      box-shadow: 0 4px 12px rgba(255, 77, 126, 0.22);
+    }
+
+    .surprise-button:focus-visible {
+      outline: 3px solid rgba(255, 77, 126, 0.32);
+      outline-offset: 4px;
+    }
+
+    .surprise-button:disabled {
+      cursor: default;
+    }
+
+    .canvas-scene {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f5f1ff 0%, #ffffff 100%);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      touch-action: none;
+      transition:
+        opacity 0.8s ease,
+        visibility 0s linear 0.8s;
+    }
+
+    /* 爆发背景：白 → 浅粉 → 粉 → 玫粉，四段叠层交叉淡入，由进度驱动 */
+    .pink-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      opacity: 0;
+      pointer-events: none;
+      will-change: opacity;
+    }
+
+    .pink-layer-1 {
+      background: linear-gradient(180deg, #ffffff 0%, #ffe4f0 100%);
+    }
+
+    .pink-layer-2 {
+      background: linear-gradient(180deg, #ffe4f0 0%, #ffc4e1 100%);
+    }
+
+    .pink-layer-3 {
+      background: linear-gradient(180deg, #ffc4e1 0%, #ff9ecb 100%);
+    }
+
+    .dark-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(180deg, #3a0d18 0%, #160410 100%);
+      opacity: 0;
+      pointer-events: none;
+      will-change: opacity;
+    }
+
+    #sceneCanvas {
+      position: relative;
+      z-index: 2;
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+
+    body.scene-active .birthday-card {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        opacity 0.8s ease,
+        visibility 0s linear 0.8s;
+    }
+
+    body.scene-active .canvas-scene {
+      opacity: 1;
+      visibility: visible;
+      transition:
+        opacity 0.8s ease,
+        visibility 0s linear 0s;
+    }
+
+    .canvas-scene.word-cloud-active {
+      pointer-events: auto;
+    }
+
+    /* 右下角玻璃拟态控制按钮 */
+    .scene-controls {
+      position: absolute;
+      right: max(14px, env(safe-area-inset-right));
+      bottom: max(18px, env(safe-area-inset-bottom));
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    body.scene-active .scene-controls {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .glass-button {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.86);
+      border-radius: 50%;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.2);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 5px 16px rgba(20, 3, 12, 0.14);
+      transform: scale(1);
+      transition:
+        transform 0.15s ease,
+        background 0.15s ease;
+      touch-action: manipulation;
+    }
+
+    .glass-button:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .glass-button:active {
+      transform: scale(0.86);
+    }
+
+    .glass-button:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 3px;
+    }
+
+    .glass-button svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: "round";
+      pointer-events: none;
+    }
+
+    .glass-button svg[hidden] {
+      display: none;
+    }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: max(28px, env(safe-area-inset-bottom));
+      z-index: 8;
+      max-width: calc(100vw - 120px);
+      padding: 10px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 999px;
+      color: #fff2f7;
+      background: rgba(22, 4, 16, 0.84);
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 8px);
+      transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* 顶部拖动提示 */
+    .drag-hint {
+      position: absolute;
+      top: max(14px, env(safe-area-inset-top));
+      left: 50%;
+      z-index: 4;
+      padding: 6px 14px;
+      border: 1px solid rgba(255, 190, 215, 0.16);
+      border-radius: 999px;
+      color: rgba(255, 224, 239, 0.95);
+      background: rgba(28, 5, 15, 0.58);
+      font-size: 12.5px;
+      box-shadow: 0 4px 14px rgba(12, 2, 7, 0.28);
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translate(-50%, -6px);
+      transition:
+        opacity 0.6s ease,
+        transform 0.6s ease;
+      pointer-events: none;
+    }
+
+    .canvas-scene.word-cloud-active .drag-hint {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .drag-hint.hidden {
+      opacity: 0;
+      transform: translate(-50%, -6px);
+    }
+
+    /* 留言弹窗 */
+    .message-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(15, 2, 10, 0.62);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        opacity 0.2s ease,
+        visibility 0s linear 0.2s;
+    }
+
+    .message-modal.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition:
+        opacity 0.2s ease,
+        visibility 0s linear 0s;
+    }
+
+    .message-dialog {
+      width: min(320px, calc(100vw - 40px));
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 18px;
+      color: #fff0f6;
+      background: #35101e;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+    }
+
+    .message-dialog h2 {
+      margin: 0 0 16px;
+      font-size: 20px;
+      line-height: 1.5;
+    }
+
+    .message-dialog input {
+      width: 100%;
+      height: 46px;
+      padding: 0 14px;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      border-radius: 10px;
+      outline: none;
+      color: #fff0f6;
+      background: rgba(255, 255, 255, 0.1);
+      font-size: 16px;
+    }
+
+    .message-dialog input:focus {
+      border-color: #ff9ec4;
+      box-shadow: 0 0 0 3px rgba(255, 158, 196, 0.16);
+    }
+
+    .message-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .message-actions button {
+      min-width: 72px;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      font-size: 15px;
+    }
+
+    .message-cancel {
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      color: #ffe5ee;
+      background: transparent;
+    }
+
+    .message-submit {
+      border: 0;
+      color: #40101f;
+      background: #ffb3c8;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <section class="birthday-card" id="birthdayCard" aria-labelledby="birthdayTitle">
+      <div class="cake-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <path d="M32 14C26 14 26 8 31 3C31 8 38 9 32 14Z" fill="#ff9ebb"/>
+          <rect x="29" y="14" width="6" height="14" rx="3" fill="#f6d786"/>
+          <path d="M30 18L34 21M30 23L34 26" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+          <rect x="15" y="27" width="34" height="9" rx="4.5" fill="#f9d5e3"/>
+          <path d="M13 34H51V51H13V34Z" fill="#eeb2ca"/>
+          <path d="M13 34H51V39C48 39 48 43 45 43C42 43 42 39 39 39C36 39 36 43 32 43C28 43 28 39 25 39C22 39 22 43 19 43C16 43 16 39 13 39V34Z" fill="#fff8fc"/>
+          <circle cx="22" cy="47" r="1.5" fill="#fff3f8"/>
+          <circle cx="33" cy="47" r="1.5" fill="#fff3f8"/>
+          <circle cx="43" cy="47" r="1.5" fill="#fff3f8"/>
+          <rect x="10" y="51" width="44" height="6" rx="3" fill="#a58bdd"/>
+        </svg>
+      </div>
+      <h1 id="birthdayTitle">生日快乐哦～</h1>
+      <p class="subtitle">来自学长的小惊喜嘻嘻#^.^#</p>
+      <button
+        class="surprise-button"
+        id="surpriseButton"
+        type="button"
+        aria-controls="canvasScene"
+      >
+        了解一下吗～
+      </button>
+    </section>
+  </main>
+
+  <div class="canvas-scene" id="canvasScene" aria-hidden="true">
+    <div class="pink-layer pink-layer-1" id="pinkLayer1" aria-hidden="true"></div>
+    <div class="pink-layer pink-layer-2" id="pinkLayer2" aria-hidden="true"></div>
+    <div class="pink-layer pink-layer-3" id="pinkLayer3" aria-hidden="true"></div>
+    <div class="dark-layer" id="darkLayer" aria-hidden="true"></div>
+
+    <canvas id="sceneCanvas" aria-hidden="true"></canvas>
+
+    <nav class="scene-controls" aria-label="动画控制">
+      <button class="glass-button" id="shareButton" type="button" aria-label="分享" title="分享">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <path d="M8.6 10.5L15.4 6.5M8.6 13.5L15.4 17.5"></path>
+        </svg>
+      </button>
+      <button class="glass-button" id="replayButton" type="button" aria-label="重播" title="重播">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+          <path d="M3 4v6h6"></path>
+        </svg>
+      </button>
+      <button class="glass-button" id="musicButton" type="button" aria-label="静音" title="音乐">
+        <svg id="volumeIcon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M11 5L6 9H3v6h3l5 4V5Z"></path>
+          <path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"></path>
+        </svg>
+        <svg id="muteIcon" viewBox="0 0 24 24" aria-hidden="true" hidden>
+          <path d="M11 5L6 9H3v6h3l5 4V5Z"></path>
+          <path d="M16 9l5 6M21 9l-5 6"></path>
+        </svg>
+      </button>
+      <button class="glass-button" id="pauseButton" type="button" aria-label="暂停" title="暂停">
+        <svg id="pauseIcon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 5v14M16 5v14"></path>
+        </svg>
+        <svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true" hidden>
+          <path d="M8 5l11 7-11 7V5Z"></path>
+        </svg>
+      </button>
+      <button class="glass-button" id="messageButton" type="button" aria-label="留言" title="留言">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2V6a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v9Z"></path>
+        </svg>
+      </button>
+    </nav>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="drag-hint" id="dragHint" aria-hidden="true">可以试试拖动屏幕哦~</div>
+  </div>
+
+  <div class="message-modal" id="messageModal" aria-hidden="true">
+    <form class="message-dialog" id="messageForm">
+      <h2>写一句祝福吧</h2>
+      <input
+        id="messageInput"
+        type="text"
+        maxlength="40"
+        autocomplete="off"
+        placeholder="输入你想说的话…"
+        aria-label="留言内容"
+        required
+      >
+      <div class="message-actions">
+        <button class="message-cancel" id="messageCancel" type="button">取消</button>
+        <button class="message-submit" type="submit">加入空间</button>
+      </div>
+    </form>
+  </div>
+
+  <!--
+    免费 BGM：Heartwarming — Kevin MacLeod（Incompetech），CC BY 4.0。
+    可靠音源建议：从 https://incompetech.com 搜索 Heartwarming 下载 MP3，
+    或从 Pixabay Music 筛选 Piano 并核对单曲许可证。正式发布时建议将音频
+    下载到本站 ./audio/Heartwarming.mp3，并保留下方署名，避免跨域和网络波动。
+  -->
+  <audio id="bgm" loop preload="metadata">
+    <source
+      src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Heartwarming.mp3"
+      type="audio/mpeg"
+    >
+  </audio>
+
+  <script>
+    function drawHeart(ctx, x, y, size, color, rotation) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.beginPath();
+      ctx.moveTo(0, size * 0.35);
+      ctx.bezierCurveTo(
+        -size * 0.85, -size * 0.2,
+        -size * 0.55, -size * 0.9,
+        0, -size * 0.42
+      );
+      ctx.bezierCurveTo(
+        size * 0.55, -size * 0.9,
+        size * 0.85, -size * 0.2,
+        0, size * 0.35
+      );
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    (() => {
+      const button = document.getElementById("surpriseButton");
+      const card = document.getElementById("birthdayCard");
+      const scene = document.getElementById("canvasScene");
+      const darkLayer = document.getElementById("darkLayer");
+      const pinkLayer1 = document.getElementById("pinkLayer1");
+      const pinkLayer2 = document.getElementById("pinkLayer2");
+      const pinkLayer3 = document.getElementById("pinkLayer3");
+      const canvas = document.getElementById("sceneCanvas");
+      const context = canvas.getContext("2d");
+      const toast = document.getElementById("toast");
+      const bgm = document.getElementById("bgm");
+      const musicButton = document.getElementById("musicButton");
+      const volumeIcon = document.getElementById("volumeIcon");
+      const muteIcon = document.getElementById("muteIcon");
+      const pauseButton = document.getElementById("pauseButton");
+      const pauseIcon = document.getElementById("pauseIcon");
+      const playIcon = document.getElementById("playIcon");
+      const messageModal = document.getElementById("messageModal");
+      const messageForm = document.getElementById("messageForm");
+      const messageInput = document.getElementById("messageInput");
+      const dragHint = document.getElementById("dragHint");
+
+      const TAU = Math.PI * 2;
+      const FRAME_INTERVAL = 1000 / 60;
+      const AMBIENT_COUNT = 56;
+      const HEART_PARTICLE_COUNT = 600;
+      const HEART_PATH_STEPS = 360;
+      const RECALL_PATH_STEPS = 180;
+      const FLIGHT_SAMPLE_STEPS = 180;
+      const HEART_FONT_VARIANTS = 3;
+      const SNOW_DURATION = 2;
+      const HEART_DRAW_DURATION = 4;
+      const HEART_BREATH_DURATION = 1.5;
+      const RECALL_DURATION = 1.8;
+      const GATHER_DURATION = 0.6;
+      const EXPLOSION_DURATION = 2.2;
+      const EXPLOSION_DRAG = 1.15;
+      const FLASH_CENTER = 1;
+      const FLASH_HALF = 0.075;
+      const FLASH_PEAK = 0.5;
+      const CLOUD_ZOOM_TARGET = 1.55;
+      const HEART_REST_PROGRESS = 0.11;
+      const TEXT_CACHE_SCALE = 2;
+      const HEART_COLORS = ["#ff8fb0", "#ff6f9c", "#ffb3c8"];
+      const AMBIENT_HEART_COLORS = ["#f5b7c9", "#f4e5a4", "#b9dbf0"];
+
+      /* 1.8s 收回 + 0.6s 蓄势 + 2.2s 爆发 = 4.6s */
+      const TRANSITION_DURATION = RECALL_DURATION
+        + GATHER_DURATION
+        + EXPLOSION_DURATION;
+
+      const BASE_CLOUD_COUNT = 50;
+      const MESSAGE_POOL_SIZE = 7;
+      const CLOUD_ITEM_CAPACITY = BASE_CLOUD_COUNT + MESSAGE_POOL_SIZE;
+      const CLOUD_NEAR_COUNT = 8;
+      const CLOUD_MID_COUNT = 22;
+      const CLOUD_FOCAL = 520;
+      const MAX_PITCH = 24 * Math.PI / 180;
+      const CLOUD_COLORS = ["#ff9ec4", "#ff7aa2", "#ffd0e0"];
+      const CLOUD_LAYER_ALPHAS = [1, 0.8, 0.52];
+      const CLOUD_HEART_COUNT = 18;
+      const CLOUD_LIGHT_COUNT = 24;
+      const BACKGROUND_SPOT_COUNT = 4;
+      const CLOUD_TEXTS = [
+        "祝路由器生日快乐！",
+        "泥怎么这么可爱。",
+        "没有流星可以向我许个愿哦～",
+        "生理期不许喝冰的！",
+        "熬夜一定要叫上我！",
+        "可以试着跟我撒个娇吗…",
+        "魅力这么大…败给你了～",
+        "记得努力放下你的小手机～",
+        "注意保暖～",
+        "能教教我怎么像你一样迷人吗～",
+        "为天使小姐生日快乐呀！",
+        "一定要好好休息！",
+        "事事顺心，岁岁平安",
+        "记得早点睡～",
+        "不睡的话我陪你一起熬",
+        "成绩扶摇直上！",
+        "生日快乐呀！",
+        "万事如意，心想事成",
+        "寒假一起上王者吗",
+        "送上我最真挚的祝福！",
+        "眉目舒展，顺问冬安",
+        "顺遂无虞，皆得所愿",
+        "我会一直主动下去",
+        "学妹就是这么可爱啊",
+        "完全一只小兔子来的",
+        "且做人间长寿仙！",
+        "遇见你是我的荣幸",
+        "这么萌你不要命了…",
+        "不过是又大了一岁的美女罢了",
+        "大萌之人！",
+        "喜欢你哦！",
+        "你好美……",
+        "好萌。",
+        "女神来的。",
+        "好温柔的人",
+        "～",
+        "喜欢…",
+        "我会一直在的",
+        "天天开心",
+        "我想陪你。",
+        "超级美！",
+        "萌！",
+        "最厉害的瑶！",
+        "可爱！",
+        "生日快乐！",
+        "要永远开心哦！",
+        "前程似锦～",
+        "今日限定大寿星",
+        "一岁一礼，一寸欢喜",
+        "身材怎么这么哇塞！"
+      ];
+
+      const ambientParticles = new Array(AMBIENT_COUNT);
+      const heartParticles = new Array(HEART_PARTICLE_COUNT);
+      const heartPathX = new Float32Array(HEART_PATH_STEPS + 1);
+      const heartPathY = new Float32Array(HEART_PATH_STEPS + 1);
+      const heartPathLengths = new Float32Array(HEART_PATH_STEPS + 1);
+      const recallPathX = new Float32Array(RECALL_PATH_STEPS + 1);
+      const recallPathY = new Float32Array(RECALL_PATH_STEPS + 1);
+      const explosionTravel = new Float32Array(FLIGHT_SAMPLE_STEPS + 1);
+      const trailX = new Float32Array(HEART_PARTICLE_COUNT * 3);
+      const trailY = new Float32Array(HEART_PARTICLE_COUNT * 3);
+      const ballGlowCanvas = document.createElement("canvas");
+      const heartSpriteVariants = new Array(CLOUD_TEXTS.length);
+      const heartPhraseIndices = new Uint8Array(HEART_PARTICLE_COUNT);
+      const cloudItems = new Array(CLOUD_ITEM_CAPACITY);
+      const cloudDrawOrder = new Array(CLOUD_ITEM_CAPACITY);
+      const cloudHearts = new Array(CLOUD_HEART_COUNT);
+      const cloudLights = new Array(CLOUD_LIGHT_COUNT);
+      const backgroundSpots = new Array(BACKGROUND_SPOT_COUNT);
+      const titleSprites = new Array(3);
+      const titleGlowCanvas = document.createElement("canvas");
+      const cloudMeasureCanvas = document.createElement("canvas");
+      const cloudMeasureContext = cloudMeasureCanvas.getContext("2d");
+
+      let hasStarted = false;
+      let poolInitialized = false;
+      let isPaused = false;
+      let degraded = false;
+      let viewWidth = window.innerWidth;
+      let viewHeight = window.innerHeight;
+      let viewPixelRatio = 1;
+      let heartCenterX = viewWidth / 2;
+      let heartCenterY = viewHeight / 2;
+      let heartPathTotalLength = 1;
+      let animationFrameId = 0;
+      let lastFrameTime = 0;
+      let animationTime = 0;
+      let phase = "snow";
+      let phaseElapsed = 0;
+      let heartParticleCursor = 0;
+      let pencilX = 0;
+      let pencilY = 0;
+      let pencilAngle = 0;
+      let pencilArcProgress = 0;
+      let explosionOriginX = 0;
+      let explosionOriginY = 0;
+
+      let cloudAutoRotation = 0;
+      let cloudManualRotation = 0;
+      let cloudPitch = 0;
+      let cloudZoom = 1;
+      let focusItem = null;
+      let focusTargetItem = null;
+      let focusTurning = false;
+      let focusTurn = 0;
+      let focusTurnFromYaw = 0;
+      let focusTurnToYaw = 0;
+      let focusTurnFromPitch = 0;
+      let focusTurnToPitch = 0;
+      let focusMix = 0;
+      let titleFloatMix = 0;
+      let titleFloatTarget = 0;
+      let focusFromX = 0;
+      let focusFromY = 0;
+      let tapStartX = 0;
+      let tapStartY = 0;
+      let tapStartTime = 0;
+      let tapMoved = false;
+      let lastTapAt = 0;
+      let cloudInertiaY = 0;
+      let cloudInertiaPitch = 0;
+      let cloudAutoWeight = 1;
+      let cloudDragging = false;
+      let lastTouchX = 0;
+      let lastTouchY = 0;
+      let lastTouchTime = 0;
+      let messageWriteCursor = 0;
+
+      let fpsWindowStart = 0;
+      let fpsFrameCount = 0;
+      let lowFpsDuration = 0;
+      let toastTimer = 0;
+
+      function clamp(value, minimum, maximum) {
+        return Math.max(minimum, Math.min(maximum, value));
+      }
+
+      function showToast(text) {
+        window.clearTimeout(toastTimer);
+        toast.textContent = text;
+        toast.classList.add("visible");
+        toastTimer = window.setTimeout(() => {
+          toast.classList.remove("visible");
+        }, 1800);
+      }
+
+      function rebuildHeartPath() {
+        heartCenterX = viewWidth / 2;
+        heartCenterY = viewHeight * 0.47;
+
+        const heartScale = Math.min(viewWidth / 42, viewHeight / 44) * 0.86;
+        heartPathTotalLength = 0;
+        heartPathLengths[0] = 0;
+
+        for (let i = 0; i <= HEART_PATH_STEPS; i++) {
+          const t = TAU * i / HEART_PATH_STEPS;
+          const x = 16 * Math.pow(Math.sin(t), 3);
+          const y = 13 * Math.cos(t)
+            - 5 * Math.cos(2 * t)
+            - 2 * Math.cos(3 * t)
+            - Math.cos(4 * t);
+
+          heartPathX[i] = heartCenterX + x * heartScale;
+          heartPathY[i] = heartCenterY - y * heartScale;
+
+          if (i > 0) {
+            const segmentX = heartPathX[i] - heartPathX[i - 1];
+            const segmentY = heartPathY[i] - heartPathY[i - 1];
+            heartPathTotalLength += Math.sqrt(
+              segmentX * segmentX + segmentY * segmentY
+            );
+            heartPathLengths[i] = heartPathTotalLength;
+          }
+        }
+
+        heartPathTotalLength = Math.max(1, heartPathTotalLength);
+
+        /* 倒放轨迹预先插值，收回阶段不再计算心形方程 */
+        for (let i = 0; i <= RECALL_PATH_STEPS; i++) {
+          const sourcePosition = HEART_REST_PROGRESS * HEART_PATH_STEPS
+            * (1 - i / RECALL_PATH_STEPS);
+          const sourceIndex = Math.floor(sourcePosition);
+          const sourceFraction = sourcePosition - sourceIndex;
+          const nextIndex = Math.min(HEART_PATH_STEPS, sourceIndex + 1);
+
+          recallPathX[i] = heartPathX[sourceIndex]
+            + (heartPathX[nextIndex] - heartPathX[sourceIndex]) * sourceFraction;
+          recallPathY[i] = heartPathY[sourceIndex]
+            + (heartPathY[nextIndex] - heartPathY[sourceIndex]) * sourceFraction;
+        }
+      }
+
+      function resizeCanvas() {
+        viewWidth = window.innerWidth;
+        viewHeight = window.innerHeight;
+        viewPixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+
+        canvas.width = Math.round(viewWidth * viewPixelRatio);
+        canvas.height = Math.round(viewHeight * viewPixelRatio);
+        canvas.style.width = viewWidth + "px";
+        canvas.style.height = viewHeight + "px";
+
+        if (context) {
+          context.setTransform(viewPixelRatio, 0, 0, viewPixelRatio, 0, 0);
+        }
+
+        rebuildHeartPath();
+
+        if (poolInitialized) {
+          for (let i = 0; i < AMBIENT_COUNT; i++) {
+            const particle = ambientParticles[i];
+            particle.x = Math.min(particle.x, viewWidth);
+            particle.y = Math.min(particle.y, viewHeight + particle.size * 2);
+          }
+        }
+      }
+
+      function resetAmbientParticle(particle, initial) {
+        const isHeart = particle.type === 1;
+
+        particle.size = isHeart
+          ? 5 + Math.random() * 7
+          : 4 + Math.random() * 6;
+        particle.x = Math.random() * viewWidth;
+        particle.y = initial
+          ? Math.random() * viewHeight
+          : -particle.size * 2 - Math.random() * Math.max(40, viewHeight * 0.12);
+        particle.speed = 24 + Math.random() * 42;
+        particle.swingAmplitude = 10 + Math.random() * 30;
+        particle.swingSpeed = 0.45 + Math.random() * 1.1;
+        particle.phase = Math.random() * TAU;
+        particle.rotation = Math.random() * TAU;
+        particle.rotationSpeed = (Math.random() - 0.5) * 1.8;
+        particle.opacity = 0.45 + Math.random() * 0.45;
+
+        if (isHeart) {
+          particle.color = AMBIENT_HEART_COLORS[
+            Math.floor(Math.random() * AMBIENT_HEART_COLORS.length)
+          ];
+        }
+      }
+
+      function createHeartSprite(text, fontSize, color) {
+        const font = '600 ' + fontSize
+          + 'px "PingFang SC", "Microsoft YaHei", sans-serif';
+        cloudMeasureContext.font = font;
+
+        const naturalWidth = cloudMeasureContext.measureText(text).width;
+        const textWidth = Math.min(
+          naturalWidth,
+          Math.min(170, viewWidth * 0.3)
+        );
+        const width = Math.ceil(textWidth + 8);
+        const height = Math.ceil(fontSize + 8);
+        const sprite = document.createElement("canvas");
+        sprite.width = Math.ceil(width * TEXT_CACHE_SCALE);
+        sprite.height = Math.ceil(height * TEXT_CACHE_SCALE);
+
+        const spriteContext = sprite.getContext("2d");
+        spriteContext.scale(TEXT_CACHE_SCALE, TEXT_CACHE_SCALE);
+        spriteContext.font = font;
+        spriteContext.textAlign = "center";
+        spriteContext.textBaseline = "middle";
+        spriteContext.fillStyle = color;
+
+        /* 每个字号变体仅在这里渲染一次，动画热路径不再调用 fillText */
+        spriteContext.fillText(text, width / 2, height / 2, textWidth);
+
+        return {
+          canvas: sprite,
+          width: width,
+          height: height,
+          fontSize: fontSize
+        };
+      }
+
+      function initializeHeartSpriteVariants() {
+        for (let i = 0; i < CLOUD_TEXTS.length; i++) {
+          const variants = new Array(HEART_FONT_VARIANTS);
+          const fontSizes = [
+            9 + Math.random(),
+            11 + Math.random(),
+            13 + Math.random()
+          ];
+
+          for (let variant = 0; variant < HEART_FONT_VARIANTS; variant++) {
+            variants[variant] = createHeartSprite(
+              CLOUD_TEXTS[i],
+              fontSizes[variant],
+              HEART_COLORS[Math.floor(Math.random() * HEART_COLORS.length)]
+            );
+          }
+          heartSpriteVariants[i] = variants;
+        }
+      }
+
+      function initializeHeartPhraseOrder() {
+        /* 每 100 个粒子包含全部 50 句各两次，并在组内随机洗牌 */
+        for (let block = 0; block < HEART_PARTICLE_COUNT; block += 100) {
+          for (let i = 0; i < 100; i++) {
+            heartPhraseIndices[block + i] = i % CLOUD_TEXTS.length;
+          }
+          for (let i = 99; i > 0; i--) {
+            const randomIndex = Math.floor(Math.random() * (i + 1));
+            const current = block + i;
+            const temporary = heartPhraseIndices[current];
+            heartPhraseIndices[current] = heartPhraseIndices[block + randomIndex];
+            heartPhraseIndices[block + randomIndex] = temporary;
+          }
+        }
+      }
+
+      function renderCloudItemSprite(item) {
+        const font = "600 " + item.fontSize + 'px "PingFang SC", '
+          + '"Microsoft YaHei", "Noto Sans CJK SC", sans-serif';
+
+        cloudMeasureContext.font = font;
+        const naturalWidth = cloudMeasureContext.measureText(item.text).width;
+        const maxWidth = Math.max(
+          40,
+          viewWidth * (item.layer === 0 ? 0.82 : 0.66)
+        );
+        const textWidth = Math.min(naturalWidth, maxWidth);
+
+        item.width = Math.ceil(textWidth + 22);
+        item.height = Math.ceil(item.fontSize + 22);
+
+        const sprite = document.createElement("canvas");
+        sprite.width = item.width * TEXT_CACHE_SCALE;
+        sprite.height = item.height * TEXT_CACHE_SCALE;
+
+        const spriteContext = sprite.getContext("2d");
+        spriteContext.scale(TEXT_CACHE_SCALE, TEXT_CACHE_SCALE);
+        spriteContext.font = font;
+        spriteContext.textAlign = "center";
+        spriteContext.textBaseline = "middle";
+
+        /* 近景先垫一层暗晕，压在别的句子上也读得清 */
+        if (item.layer === 0) {
+          spriteContext.shadowColor = "rgba(26, 4, 14, 0.95)";
+          spriteContext.shadowBlur = 9;
+          spriteContext.fillStyle = "rgba(30, 5, 16, 0.92)";
+          spriteContext.fillText(
+            item.text,
+            item.width / 2,
+            item.height / 2,
+            textWidth
+          );
+        }
+
+        /* 粉色辉光烘焙进贴图，热路径不再开 shadowBlur */
+        spriteContext.shadowColor = "rgba(255, 110, 160, 0.7)";
+        spriteContext.shadowBlur = 7;
+        spriteContext.fillStyle = item.color;
+        spriteContext.fillText(
+          item.text,
+          item.width / 2,
+          item.height / 2,
+          textWidth
+        );
+
+        item.sprite = sprite;
+      }
+
+      function makeCloudItem(text, layer) {
+        return {
+          active: true,
+          text: text,
+          layer: layer,
+          x: 0,
+          y: 0,
+          z: 0,
+          color: CLOUD_COLORS[Math.floor(Math.random() * 3)],
+          floatAmplitude: 0.02,
+          floatSpeed: 0.5 + Math.random() * 0.6,
+          floatPhase: Math.random() * TAU,
+          layerAlpha: CLOUD_LAYER_ALPHAS[layer],
+          projectedZ: 0,
+          projectedScale: 1,
+          screenX: 0,
+          screenY: 0,
+          fontSize: 0,
+          width: 0,
+          height: 0,
+          sprite: null,
+          /* 每句固定的微倾斜，让整片词云有立体感 */
+          tilt: ((Math.random() * 2 - 1) * 6) * Math.PI / 180,
+          /* 流光扫过的初始相位，避免所有句子同频闪 */
+          shinePhase: Math.random()
+        };
+      }
+
+      function createBackgroundSpot(spot) {
+        const diameter = Math.ceil(spot.radius * 2);
+        const sprite = document.createElement("canvas");
+        sprite.width = diameter;
+        sprite.height = diameter;
+
+        const spriteContext = sprite.getContext("2d");
+        const gradient = spriteContext.createRadialGradient(
+          spot.radius,
+          spot.radius,
+          0,
+          spot.radius,
+          spot.radius,
+          spot.radius
+        );
+        gradient.addColorStop(0, "rgba(145, 24, 48, 0.2)");
+        gradient.addColorStop(0.5, "rgba(118, 17, 40, 0.08)");
+        gradient.addColorStop(1, "rgba(80, 8, 28, 0)");
+        spriteContext.fillStyle = gradient;
+        spriteContext.fillRect(0, 0, diameter, diameter);
+        spot.sprite = sprite;
+      }
+
+      function initializeBallGlow() {
+        ballGlowCanvas.width = 256;
+        ballGlowCanvas.height = 256;
+        const glowContext = ballGlowCanvas.getContext("2d");
+        const gradient = glowContext.createRadialGradient(
+          128, 128, 0, 128, 128, 128
+        );
+        gradient.addColorStop(0, "rgba(255, 255, 255, 0.95)");
+        gradient.addColorStop(0.25, "rgba(255, 220, 235, 0.75)");
+        gradient.addColorStop(0.58, "rgba(255, 111, 156, 0.28)");
+        gradient.addColorStop(1, "rgba(255, 111, 156, 0)");
+        glowContext.fillStyle = gradient;
+        glowContext.fillRect(0, 0, 256, 256);
+      }
+
+      function initializePoolsAndCaches() {
+        if (poolInitialized) return;
+
+        initializeBallGlow();
+
+        /* 阻尼位移表 (1-e^{-kt})/k：3 秒共 180 帧，热路径只做查表插值 */
+        for (let i = 0; i <= FLIGHT_SAMPLE_STEPS; i++) {
+          const time = i / 60;
+          explosionTravel[i] = (
+            1 - Math.exp(-EXPLOSION_DRAG * time)
+          ) / EXPLOSION_DRAG;
+        }
+
+        for (let i = 0; i < AMBIENT_COUNT; i++) {
+          ambientParticles[i] = {
+            type: i % 2,
+            x: 0,
+            y: 0,
+            size: 0,
+            speed: 0,
+            swingAmplitude: 0,
+            swingSpeed: 0,
+            phase: 0,
+            rotation: 0,
+            rotationSpeed: 0,
+            opacity: 1,
+            color: "#ffffff"
+          };
+          resetAmbientParticle(ambientParticles[i], true);
+        }
+
+        initializeHeartSpriteVariants();
+        initializeHeartPhraseOrder();
+
+        for (let i = 0; i < HEART_PARTICLE_COUNT; i++) {
+          /* 球面均匀方向（含纵深 z）与 1~3 倍初速全部预生成 */
+          const directionZ = Math.random() * 2 - 1;
+          const directionAngle = Math.random() * TAU;
+          const directionRadius = Math.sqrt(1 - directionZ * directionZ);
+          const speedFactor = 1 + Math.random() * 2;
+          const baseSpeed = 400 + Math.random() * 170;
+          const speed = baseSpeed * speedFactor;
+          const ballAngle = Math.random() * TAU;
+          const ballRadius = Math.sqrt(Math.random());
+          const recallDelay = Math.random() * 0.25;
+
+          heartParticles[i] = {
+            active: false,
+            x: 0,
+            y: 0,
+            originX: 0,
+            originY: 0,
+            startX: 0,
+            startY: 0,
+            ballUnitX: Math.cos(ballAngle) * ballRadius,
+            ballUnitY: Math.sin(ballAngle) * ballRadius,
+            velocityX: Math.cos(directionAngle) * directionRadius * speed,
+            velocityY: Math.sin(directionAngle) * directionRadius * speed,
+            directionZ: directionZ,
+            speedFactor: speedFactor,
+            explosionSpin: (Math.random() - 0.5) * 1.6,
+            recallDelay: recallDelay,
+            recallDuration: RECALL_DURATION - recallDelay,
+            fontSize: 15,
+            rotation: 0,
+            originRotation: 0,
+            opacity: 1,
+            twinklePhase: 0,
+            twinkleSpeed: 0,
+            depthScale: 1,
+            driftPhase: 0,
+            /* 非空 = 这颗粒子是某句祝福的“主角”，爆发中直接飞向词云坐标 */
+            heroItem: null,
+            arcSign: Math.random() < 0.5 ? -1 : 1,
+            sprite: null
+          };
+        }
+
+        initializeTitleSprites();
+        initializeCloudItems();
+        initializeCloudDecorations();
+        poolInitialized = true;
+      }
+
+      /* 近景 8 条的“屏幕落点”（相对画面宽高的偏移比例），每次加载重新洗牌 */
+      const CLOUD_NEAR_SLOTS = [
+        [-0.20, -0.40],
+        [0.20, -0.38],
+        [-0.24, -0.15],
+        [0.24, -0.13],
+        [-0.24, 0.13],
+        [0.24, 0.15],
+        [-0.18, 0.38],
+        [0.18, 0.40]
+      ];
+
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          const temporary = array[i];
+          array[i] = array[j];
+          array[j] = temporary;
+        }
+        return array;
+      }
+
+      function getCloudFontSize(layer) {
+        const compact = viewWidth < 600;
+        if (layer === 0) return compact ? 19 : 26;
+        if (layer === 1) return compact ? 14 : 19;
+        return compact ? 11 : 15;
+      }
+
+      /* 把“屏幕落点比例”反解成椭球坐标，保证最终视野里的疏密可控 */
+      function placeGreetingAtScreen(item, fractionX, fractionY) {
+        const perspective = 0.64 + 0.38 * clamp(item.z + 0.8, 0, 1);
+        const scaleX = viewWidth * 0.56 * perspective * CLOUD_ZOOM_TARGET;
+        const scaleY = viewHeight * 0.46 * perspective * CLOUD_ZOOM_TARGET;
+
+        item.x = clamp(fractionX * viewWidth / scaleX, -0.78, 0.78);
+        item.y = clamp(fractionY * viewHeight / scaleY, -1.26, 1.26);
+      }
+
+      function prepareGreetingItem(item) {
+        item.fontSize = getCloudFontSize(item.layer);
+        item.layerAlpha = CLOUD_LAYER_ALPHAS[item.layer];
+        item.floatAmplitude = 0.01 + Math.random() * 0.024;
+        item.floatSpeed = 0.35 + Math.random() * 0.6;
+        item.floatPhase = Math.random() * TAU;
+
+        /* 越远倾斜越大，近景克制一点，叠出空间层次 */
+        const tiltLimit = item.layer === 2 ? 10 : item.layer === 1 ? 8 : 5;
+        item.tilt = ((Math.random() * 2 - 1) * tiltLimit) * Math.PI / 180;
+
+        renderCloudItemSprite(item);
+      }
+
+      /* 42 个抖动网格单元：先保证覆盖，再洗牌分配，避免扎堆和空洞 */
+      function buildCloudCells() {
+        const columns = 6;
+        const rows = 7;
+        const cells = [];
+        const cellWidth = 1.0 / columns;
+        const cellHeight = 0.92 / rows;
+
+        for (let row = 0; row < rows; row++) {
+          for (let column = 0; column < columns; column++) {
+            cells.push({
+              x: -0.5 + (column + 0.5) * cellWidth
+                + (Math.random() - 0.5) * cellWidth * 0.7,
+              y: -0.46 + (row + 0.5) * cellHeight
+                + (Math.random() - 0.5) * cellHeight * 0.7
+            });
+          }
+        }
+
+        return shuffleArray(cells);
+      }
+
+      function initializeCloudItems() {
+        const nearSlots = shuffleArray(CLOUD_NEAR_SLOTS.slice());
+        const cells = buildCloudCells();
+        const colors = [];
+
+        for (let i = 0; i < BASE_CLOUD_COUNT; i++) {
+          colors.push(CLOUD_COLORS[i % CLOUD_COLORS.length]);
+        }
+        shuffleArray(colors);
+
+        for (let i = 0; i < BASE_CLOUD_COUNT; i++) {
+          const layer = i < CLOUD_NEAR_COUNT
+            ? 0
+            : i < CLOUD_NEAR_COUNT + CLOUD_MID_COUNT
+              ? 1
+              : 2;
+          const item = makeCloudItem(CLOUD_TEXTS[i], layer);
+
+          item.color = colors[i];
+
+          if (layer === 0) {
+            item.z = -0.14 + Math.random() * 0.22;
+            prepareGreetingItem(item);
+
+            const slot = nearSlots[i];
+            placeGreetingAtScreen(
+              item,
+              slot[0] + (Math.random() - 0.5) * 0.024,
+              slot[1] + (Math.random() - 0.5) * 0.024
+            );
+          } else {
+            item.z = layer === 1
+              ? -0.5 + Math.random() * 0.44
+              : -0.78 + Math.random() * 0.3;
+            prepareGreetingItem(item);
+
+            const cell = cells[i - CLOUD_NEAR_COUNT];
+            placeGreetingAtScreen(item, cell.x, cell.y);
+          }
+
+          cloudItems[i] = item;
+          cloudDrawOrder[i] = item;
+        }
+
+        refineCloudLayout();
+
+        for (let i = 0; i < MESSAGE_POOL_SIZE; i++) {
+          const item = makeCloudItem("", 0);
+          item.active = false;
+          item.fontSize = viewWidth < 600 ? 15 : 17;
+
+          const index = BASE_CLOUD_COUNT + i;
+          cloudItems[index] = item;
+          cloudDrawOrder[index] = item;
+        }
+      }
+
+      /* 屏幕空间去重叠：近景当锚点，中远景沿 y 推开，并给控制区留白 */
+      function refineCloudLayout() {
+        const centerX = viewWidth / 2;
+        const centerY = viewHeight * 0.47;
+        const scaleX = viewWidth * 0.56 * CLOUD_ZOOM_TARGET;
+        const scaleY = viewHeight * 0.46 * CLOUD_ZOOM_TARGET;
+        const yawSamples = [0, 0.28, -0.28, 0.56, -0.56];
+
+        function measureAt(item, cosY, sinY) {
+          const rotatedX = item.x * cosY + item.z * sinY;
+          const rotatedZ = -item.x * sinY + item.z * cosY;
+          const perspective = 0.64
+            + 0.38 * clamp((rotatedZ + 0.8) / 1, 0, 1);
+          const cosTilt = Math.abs(Math.cos(item.tilt));
+          const sinTilt = Math.abs(Math.sin(item.tilt));
+
+          return {
+            x: centerX + rotatedX * scaleX * perspective,
+            y: centerY + item.y * scaleY * perspective,
+            width: (item.width * cosTilt + item.height * sinTilt)
+              * perspective * CLOUD_ZOOM_TARGET,
+            height: (item.width * sinTilt + item.height * cosTilt)
+              * perspective * CLOUD_ZOOM_TARGET,
+            perspective: perspective
+          };
+        }
+
+        for (let pass = 0; pass < 22; pass++) {
+          let moved = 0;
+          const samples = new Array(yawSamples.length);
+
+          for (let s = 0; s < yawSamples.length; s++) {
+            const cosY = Math.cos(yawSamples[s]);
+            const sinY = Math.sin(yawSamples[s]);
+            const rects = new Array(BASE_CLOUD_COUNT);
+
+            for (let i = 0; i < BASE_CLOUD_COUNT; i++) {
+              rects[i] = measureAt(cloudItems[i], cosY, sinY);
+            }
+            samples[s] = rects;
+          }
+
+          for (let i = 0; i < BASE_CLOUD_COUNT; i++) {
+            for (let j = i + 1; j < BASE_CLOUD_COUNT; j++) {
+              const itemA = cloudItems[i];
+              const itemB = cloudItems[j];
+              const baseRectA = samples[0][i];
+              const baseRectB = samples[0][j];
+
+              let mover = itemB;
+              let moverIndex = j;
+              let anchorIndex = i;
+
+              if (itemA.layer > itemB.layer) {
+                mover = itemA;
+                moverIndex = i;
+                anchorIndex = j;
+              } else if (itemA.layer === itemB.layer
+                && Math.abs(baseRectB.y - centerY)
+                  < Math.abs(baseRectA.y - centerY)) {
+                mover = itemA;
+                moverIndex = i;
+                anchorIndex = j;
+              }
+
+              let worstOverlap = 0;
+              let worstRect = null;
+              let worstAnchor = null;
+
+              for (let s = 0; s < samples.length; s++) {
+                const rectMover = samples[s][moverIndex];
+                const other = samples[s][moverIndex === i ? j : i];
+
+                const overlapX = (rectMover.width + other.width) / 2 + 4
+                  - Math.abs(rectMover.x - other.x);
+                const overlapY = (rectMover.height + other.height) / 2 + 3
+                  - Math.abs(rectMover.y - other.y);
+
+                if (overlapX <= 0 || overlapY <= 0) continue;
+                if (overlapY <= worstOverlap) continue;
+
+                worstOverlap = overlapY;
+                worstRect = rectMover;
+                worstAnchor = other;
+              }
+
+              if (worstOverlap <= 0) continue;
+
+              /* 沿 y 推开，屏幕窄时比横向移动更稳 */
+              const direction = worstRect.y >= worstAnchor.y ? 1 : -1;
+              const push = Math.min(worstOverlap, 14) + 1;
+
+              mover.y = clamp(
+                mover.y + direction * push / (scaleY * worstRect.perspective),
+                -1.24,
+                1.24
+              );
+              moved++;
+            }
+          }
+
+          for (let i = 0; i < BASE_CLOUD_COUNT; i++) {
+            const item = cloudItems[i];
+            const rect = measureAt(item, 1, 0);
+
+            /* 归位时先收进画面，镜头拉近后再自然出画 */
+            const halfWidth = rect.width / 2;
+            const limitX = Math.max(
+              0,
+              (viewWidth / 2 - halfWidth - 10) / (scaleX * rect.perspective)
+            );
+
+            item.x = clamp(item.x, -limitX, limitX);
+          }
+
+          if (moved === 0) break;
+        }
+
+        for (let i = 0; i < BASE_CLOUD_COUNT; i++) {
+          const item = cloudItems[i];
+          item.y = clamp(item.y, -1.24, 1.24);
+        }
+      }
+
+      function initializeCloudDecorations() {
+        const worldRadiusX = Math.min(viewWidth * 0.38, 420);
+        const worldRadiusY = Math.min(viewHeight * 0.32, 280);
+
+        for (let i = 0; i < CLOUD_HEART_COUNT; i++) {
+          cloudHearts[i] = {
+            x: (Math.random() * 2 - 1) * worldRadiusX * 1.1,
+            y: (Math.random() * 2 - 1) * worldRadiusY,
+            z: -100 + Math.random() * 340,
+            size: 7 + Math.random() * 15,
+            color: HEART_COLORS[Math.floor(Math.random() * 3)],
+            opacity: 0.35 + Math.random() * 0.5,
+            rotation: Math.random() * TAU,
+            rotationSpeed: (Math.random() - 0.5) * 0.5,
+            floatPhase: Math.random() * TAU,
+            floatSpeed: 0.5 + Math.random() * 0.6
+          };
+        }
+
+        for (let i = 0; i < CLOUD_LIGHT_COUNT; i++) {
+          cloudLights[i] = {
+            x: (Math.random() * 2 - 1) * worldRadiusX * 1.15,
+            y: (Math.random() * 2 - 1) * worldRadiusY,
+            z: -80 + Math.random() * 400,
+            size: 1.5 + Math.random() * 3,
+            opacity: 0.35 + Math.random() * 0.65,
+            twinklePhase: Math.random() * TAU,
+            twinkleSpeed: 2 + Math.random() * 2
+          };
+        }
+
+        for (let i = 0; i < BACKGROUND_SPOT_COUNT; i++) {
+          const spot = {
+            baseX: 0.15 + Math.random() * 0.7,
+            baseY: 0.15 + Math.random() * 0.7,
+            radius: 100 + Math.random() * 110,
+            moveX: 30 + Math.random() * 45,
+            moveY: 20 + Math.random() * 40,
+            speed: 0.1 + Math.random() * 0.14,
+            phase: Math.random() * TAU,
+            sprite: null
+          };
+          createBackgroundSpot(spot);
+          backgroundSpots[i] = spot;
+        }
+      }
+
+      /* 中央三行大字：粉色发光描边，缓存贴图一次，热路径只 drawImage */
+      function createTitleSprite(text, fontSize, fill, stroke, blur, weight) {
+        const font = weight + " " + fontSize + 'px "PingFang SC", '
+          + '"Microsoft YaHei", "Noto Sans CJK SC", sans-serif';
+        cloudMeasureContext.font = font;
+
+        const naturalWidth = cloudMeasureContext.measureText(text).width;
+        const padding = Math.ceil(fontSize * 0.52);
+        const width = Math.ceil(naturalWidth + padding * 2);
+        const height = Math.ceil(fontSize * 1.5 + padding);
+        const sprite = document.createElement("canvas");
+        sprite.width = Math.ceil(width * TEXT_CACHE_SCALE);
+        sprite.height = Math.ceil(height * TEXT_CACHE_SCALE);
+
+        const spriteContext = sprite.getContext("2d");
+        spriteContext.scale(TEXT_CACHE_SCALE, TEXT_CACHE_SCALE);
+        spriteContext.font = font;
+        spriteContext.textAlign = "center";
+        spriteContext.textBaseline = "middle";
+        spriteContext.lineJoin = "round";
+
+        spriteContext.shadowColor = "rgba(255, 77, 142, 0.95)";
+        spriteContext.shadowBlur = blur;
+        spriteContext.strokeStyle = stroke;
+        spriteContext.lineWidth = Math.max(2, fontSize * 0.085);
+        spriteContext.strokeText(text, width / 2, height / 2);
+
+        spriteContext.shadowBlur = Math.max(6, blur * 0.4);
+        spriteContext.fillStyle = fill;
+        spriteContext.fillText(text, width / 2, height / 2);
+
+        return {
+          canvas: sprite,
+          width: width,
+          height: height,
+          fontSize: fontSize
+        };
+      }
+
+      function createTitleGlow() {
+        const size = 512;
+        titleGlowCanvas.width = size;
+        titleGlowCanvas.height = size;
+
+        const glowContext = titleGlowCanvas.getContext("2d");
+        const gradient = glowContext.createRadialGradient(
+          size / 2,
+          size / 2,
+          0,
+          size / 2,
+          size / 2,
+          size / 2
+        );
+        gradient.addColorStop(0, "rgba(58, 13, 24, 0.94)");
+        gradient.addColorStop(0.52, "rgba(58, 13, 24, 0.62)");
+        gradient.addColorStop(1, "rgba(58, 13, 24, 0)");
+        glowContext.fillStyle = gradient;
+        glowContext.fillRect(0, 0, size, size);
+      }
+
+      function initializeTitleSprites() {
+        const compact = viewWidth < 600;
+        const sizes = compact ? [42, 33, 22] : [56, 43, 28];
+
+        /* 第三行 9 个字，按窄屏再收一次，保证不出画 */
+        sizes[2] = Math.min(sizes[2], (viewWidth - 56) / 9);
+
+        const lines = [
+          {
+            text: "李妍琪",
+            size: sizes[0],
+            fill: "#fff4fa",
+            stroke: "#ff4d8e",
+            blur: 22,
+            weight: 800
+          },
+          {
+            text: "生日快乐！",
+            size: sizes[1],
+            fill: "#fff0f7",
+            stroke: "#ff5c9a",
+            blur: 18,
+            weight: 800
+          },
+          {
+            text: "现在你和我一样大了哦",
+            size: sizes[2],
+            fill: "#ffd9e8",
+            stroke: "#ff77ad",
+            blur: 12,
+            weight: 700
+          }
+        ];
+
+        for (let i = 0; i < 3; i++) {
+          const line = lines[i];
+          titleSprites[i] = createTitleSprite(
+            line.text,
+            line.size,
+            line.fill,
+            line.stroke,
+            line.blur,
+            line.weight
+          );
+        }
+
+        createTitleGlow();
+      }
+
+      function drawSnowflake(ctx, x, y, size, rotation) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rotation);
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = Math.max(1, size * 0.16);
+        ctx.lineCap = "round";
+        ctx.shadowColor = "rgba(147, 116, 190, 0.2)";
+        ctx.shadowBlur = degraded ? 0 : 2;
+        ctx.beginPath();
+
+        for (let i = 0; i < 6; i++) {
+          const angle = i * Math.PI / 3;
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(angle) * size, Math.sin(angle) * size);
+        }
+
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawAmbientParticles(delta, opacityScale) {
+        const limit = degraded ? AMBIENT_COUNT / 2 : AMBIENT_COUNT;
+
+        for (let i = 0; i < limit; i++) {
+          const particle = ambientParticles[i];
+
+          if (delta > 0) {
+            particle.y += particle.speed * delta;
+            particle.rotation += particle.rotationSpeed * delta;
+
+            if (particle.y - particle.size * 2 > viewHeight) {
+              resetAmbientParticle(particle, false);
+            }
+          }
+
+          const drawX = particle.x + Math.sin(
+            animationTime * particle.swingSpeed + particle.phase
+          ) * particle.swingAmplitude;
+
+          context.globalAlpha = particle.opacity * opacityScale;
+
+          if (particle.type === 0) {
+            drawSnowflake(
+              context,
+              drawX,
+              particle.y,
+              particle.size,
+              particle.rotation
+            );
+          } else {
+            drawHeart(
+              context,
+              drawX,
+              particle.y,
+              particle.size,
+              particle.color,
+              particle.rotation
+            );
+          }
+        }
+
+        context.globalAlpha = 1;
+      }
+
+      function updatePencilPosition(progress) {
+        const pathPosition = progress * HEART_PATH_STEPS;
+        const index = Math.min(
+          HEART_PATH_STEPS - 1,
+          Math.floor(pathPosition)
+        );
+        const fraction = pathPosition - index;
+        const nextIndex = index + 1;
+
+        pencilX = heartPathX[index]
+          + (heartPathX[nextIndex] - heartPathX[index]) * fraction;
+        pencilY = heartPathY[index]
+          + (heartPathY[nextIndex] - heartPathY[index]) * fraction;
+
+        const segmentLength = heartPathLengths[nextIndex] - heartPathLengths[index];
+        pencilArcProgress = (
+          heartPathLengths[index] + segmentLength * fraction
+        ) / heartPathTotalLength;
+
+        const previousIndex = Math.max(0, index - 1);
+        const tangentIndex = Math.min(HEART_PATH_STEPS, index + 2);
+        pencilAngle = Math.atan2(
+          heartPathY[tangentIndex] - heartPathY[previousIndex],
+          heartPathX[tangentIndex] - heartPathX[previousIndex]
+        ) - Math.PI / 2;
+      }
+
+      function getHeartParticleLimit() {
+        return degraded ? HEART_PARTICLE_COUNT / 2 : HEART_PARTICLE_COUNT;
+      }
+
+      function spawnHeartParticles(targetCount) {
+        const boundedTarget = Math.min(getHeartParticleLimit(), targetCount);
+
+        while (heartParticleCursor < boundedTarget) {
+          const particle = heartParticles[heartParticleCursor];
+          const phraseIndex = heartPhraseIndices[heartParticleCursor];
+          const variants = heartSpriteVariants[phraseIndex];
+          const jitterAngle = Math.random() * TAU;
+          const jitterRadius = Math.random() * 6;
+
+          particle.active = true;
+          particle.x = pencilX + Math.cos(jitterAngle) * jitterRadius;
+          particle.y = pencilY + Math.sin(jitterAngle) * jitterRadius;
+          particle.sprite = variants[Math.floor(Math.random() * variants.length)];
+          particle.fontSize = particle.sprite.fontSize;
+          particle.rotation = (Math.random() * 2 - 1) * 15 * Math.PI / 180;
+          particle.opacity = 0.78 + Math.random() * 0.22;
+          particle.twinklePhase = Math.random() * TAU;
+          particle.twinkleSpeed = 1.4 + Math.random() * 1.6;
+
+          heartParticleCursor++;
+        }
+      }
+
+      function drawHeartParticles(ctx, scale, time, twinkle) {
+        ctx.save();
+        ctx.translate(heartCenterX, heartCenterY);
+        ctx.scale(scale, scale);
+        ctx.translate(-heartCenterX, -heartCenterY);
+
+        for (let i = 0; i < heartParticleCursor; i++) {
+          const particle = heartParticles[i];
+          if (!particle.active) continue;
+
+          const sprite = particle.sprite;
+          const drawWidth = sprite.width;
+          const drawHeight = sprite.height;
+          const shimmer = twinkle
+            ? 0.86 + 0.14 * Math.sin(time * particle.twinkleSpeed + particle.twinklePhase)
+            : 1;
+
+          ctx.save();
+          ctx.translate(particle.x, particle.y);
+          ctx.rotate(particle.rotation);
+          ctx.globalAlpha = particle.opacity * shimmer;
+          ctx.drawImage(
+            sprite.canvas,
+            -drawWidth / 2,
+            -drawHeight / 2,
+            drawWidth,
+            drawHeight
+          );
+          ctx.restore();
+        }
+
+        ctx.restore();
+      }
+
+      function drawPencil(ctx, x, y, rotation, opacity) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rotation);
+        ctx.globalAlpha = opacity;
+        ctx.lineJoin = "round";
+
+        ctx.fillStyle = "#f4b8c2";
+        ctx.fillRect(-6, -66, 12, 11);
+        ctx.fillStyle = "#e7dce5";
+        ctx.fillRect(-6, -57, 12, 5);
+
+        ctx.fillStyle = "#ef7f9f";
+        ctx.fillRect(-6, -52, 12, 39);
+        ctx.strokeStyle = "#d65d82";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(-6, -52, 12, 39);
+
+        ctx.fillStyle = "rgba(255, 255, 255, 0.78)";
+        ctx.fillRect(-3.5, -49, 2, 32);
+
+        ctx.beginPath();
+        ctx.moveTo(-6, -13);
+        ctx.lineTo(6, -13);
+        ctx.lineTo(0, 2);
+        ctx.closePath();
+        ctx.fillStyle = "#b43758";
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(-2.4, -3.5);
+        ctx.lineTo(2.4, -3.5);
+        ctx.lineTo(0, 2);
+        ctx.closePath();
+        ctx.fillStyle = "#7f1f3c";
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      function recordHeartOrigins() {
+        for (let i = 0; i < heartParticleCursor; i++) {
+          const particle = heartParticles[i];
+          particle.originX = particle.x;
+          particle.originY = particle.y;
+          particle.originRotation = particle.rotation;
+        }
+      }
+
+      function updateRecallPencil(progress) {
+        const pathPosition = progress * RECALL_PATH_STEPS;
+        const index = Math.min(RECALL_PATH_STEPS - 1, Math.floor(pathPosition));
+        const fraction = pathPosition - index;
+        const nextIndex = index + 1;
+
+        pencilX = recallPathX[index]
+          + (recallPathX[nextIndex] - recallPathX[index]) * fraction;
+        pencilY = recallPathY[index]
+          + (recallPathY[nextIndex] - recallPathY[index]) * fraction;
+
+        const previousIndex = Math.max(0, index - 1);
+        pencilAngle = Math.atan2(
+          recallPathY[nextIndex] - recallPathY[previousIndex],
+          recallPathX[nextIndex] - recallPathX[previousIndex]
+        ) - Math.PI / 2;
+      }
+
+      function updateRecallParticles() {
+        const progress = Math.min(phaseElapsed / RECALL_DURATION, 1);
+        updateRecallPencil(progress);
+
+        for (let i = 0; i < heartParticleCursor; i++) {
+          const particle = heartParticles[i];
+          const localProgress = clamp(
+            (phaseElapsed - particle.recallDelay) / particle.recallDuration,
+            0,
+            1
+          );
+          const eased = localProgress * localProgress * localProgress;
+
+          particle.x = particle.originX
+            + (pencilX - particle.originX) * eased;
+          particle.y = particle.originY
+            + (pencilY - particle.originY) * eased;
+        }
+      }
+
+      function getBallRadius() {
+        return Math.min(viewWidth / 12, 80);
+      }
+
+      function drawBallGlow(x, y, radius, brightness) {
+        const glowSize = radius * 4.2;
+        context.globalAlpha = clamp(brightness, 0, 1);
+        context.drawImage(
+          ballGlowCanvas,
+          x - glowSize / 2,
+          y - glowSize / 2,
+          glowSize,
+          glowSize
+        );
+        context.globalAlpha = 1;
+      }
+
+      function updateAndDrawGatherBall() {
+        const progress = Math.min(phaseElapsed / GATHER_DURATION, 1);
+        const radius = getBallRadius();
+        const ballX = pencilX + Math.sin(animationTime * 53) * 1.8;
+        const ballY = pencilY + Math.cos(animationTime * 47) * 1.5;
+        const brightness = 0.35 + progress * 0.65;
+
+        drawBallGlow(ballX, ballY, radius, brightness);
+
+        for (let i = 0; i < heartParticleCursor; i++) {
+          const particle = heartParticles[i];
+          particle.x = ballX + particle.ballUnitX * radius;
+          particle.y = ballY + particle.ballUnitY * radius;
+          particle.rotation += 0.02;
+        }
+
+        drawHeartParticles(context, 1, animationTime, true);
+
+        context.save();
+        context.strokeStyle = "#ffffff";
+        context.lineWidth = 1.5;
+        context.shadowColor = "#ffffff";
+        context.shadowBlur = degraded ? 0 : 8;
+
+        for (let i = 0; i < 3; i++) {
+          const pulse = (phaseElapsed * 2 + i / 3) % 1;
+          context.globalAlpha = (1 - pulse) * 0.38 * brightness;
+          context.beginPath();
+          context.arc(
+            ballX,
+            ballY,
+            radius * (0.9 + pulse * 2.1),
+            0,
+            TAU
+          );
+          context.stroke();
+        }
+        context.restore();
+      }
+
+      function smoothstep(edge0, edge1, value) {
+        const t = clamp((value - edge0) / (edge1 - edge0), 0, 1);
+        return t * t * (3 - 2 * t);
+      }
+
+      function sampleExplosionTravel(time) {
+        const position = Math.min(time * 60, FLIGHT_SAMPLE_STEPS);
+        const index = Math.floor(position);
+        const fraction = position - index;
+        const nextIndex = Math.min(FLIGHT_SAMPLE_STEPS, index + 1);
+
+        return explosionTravel[index]
+          + (explosionTravel[nextIndex] - explosionTravel[index]) * fraction;
+      }
+
+      function prepareExplosion() {
+        explosionOriginX = pencilX;
+        explosionOriginY = pencilY;
+        const radius = getBallRadius();
+        const centerX = viewWidth / 2;
+        const centerY = viewHeight * 0.47;
+        cloudZoom = 1;
+
+        /* 按“喷发方向”给每句挑主角粒子：朝目标飞的那颗，避免横穿画面 */
+        const targetX = new Float32Array(CLOUD_TEXTS.length);
+        const targetY = new Float32Array(CLOUD_TEXTS.length);
+
+        for (let p = 0; p < CLOUD_TEXTS.length; p++) {
+          const item = cloudItems[p];
+          projectCloudItem(item, 1, 0, 1, 0, centerX, centerY, 0);
+          targetX[p] = item.screenX;
+          targetY[p] = item.screenY;
+        }
+
+        for (let i = 0; i < heartParticleCursor; i++) {
+          const particle = heartParticles[i];
+
+          particle.heroItem = null;
+          particle.startX = explosionOriginX + particle.ballUnitX * radius;
+          particle.startY = explosionOriginY + particle.ballUnitY * radius;
+          particle.x = particle.startX;
+          particle.y = particle.startY;
+          particle.rotation = particle.originRotation;
+          particle.depthScale = 1;
+          particle.driftPhase = Math.random() * TAU;
+
+          const trailIndex = i * 3;
+          for (let frame = 0; frame < 3; frame++) {
+            trailX[trailIndex + frame] = particle.x;
+            trailY[trailIndex + frame] = particle.y;
+          }
+        }
+
+        /* 选“爆散终点离目标最近”的那颗：归位位移最小，也不会回穿画面中间 */
+        const seekEndTravel = sampleExplosionTravel(1.8) * 0.75;
+        const bestScore = new Float32Array(CLOUD_TEXTS.length).fill(Infinity);
+        const bestIndex = new Int16Array(CLOUD_TEXTS.length).fill(-1);
+
+        for (let i = 0; i < heartParticleCursor; i++) {
+          const particle = heartParticles[i];
+          if (!particle.active) continue;
+
+          const phraseIndex = heartPhraseIndices[i];
+          const endX = particle.startX + particle.velocityX * seekEndTravel;
+          const endY = particle.startY + particle.velocityY * seekEndTravel;
+          const deltaX = targetX[phraseIndex] - endX;
+          const deltaY = targetY[phraseIndex] - endY;
+          const distanceSq = deltaX * deltaX + deltaY * deltaY;
+
+          const targetXFromOrigin = targetX[phraseIndex] - explosionOriginX;
+          const targetYFromOrigin = targetY[phraseIndex] - explosionOriginY;
+          const backward = particle.velocityX * targetXFromOrigin
+            + particle.velocityY * targetYFromOrigin < 0;
+
+          const score = backward ? distanceSq * 4 : distanceSq;
+
+          if (score < bestScore[phraseIndex]) {
+            bestScore[phraseIndex] = score;
+            bestIndex[phraseIndex] = i;
+          }
+        }
+
+        for (let p = 0; p < CLOUD_TEXTS.length; p++) {
+          if (bestIndex[p] >= 0) {
+            heartParticles[bestIndex[p]].heroItem = cloudItems[p];
+          }
+        }
+
+        /* 背景四段渐变从纯白起步，深色层在归位时同步压下来 */
+        updateExplosionBackground(0);
+        darkLayer.style.opacity = "0";
+      }
+
+      function updateExplosionBackground(progress) {
+        pinkLayer1.style.opacity = String(smoothstep(0, 0.3, progress));
+        pinkLayer2.style.opacity = String(smoothstep(0.3, 0.7, progress));
+        pinkLayer3.style.opacity = String(smoothstep(0.62, 1, progress));
+      }
+
+      function drawExplosionSprite(particle, x, y, scale, alpha, rotation) {
+        const sprite = particle.sprite;
+        const width = sprite.width * scale;
+        const height = sprite.height * scale;
+
+        context.globalAlpha = alpha;
+
+        if (rotation === 0) {
+          context.drawImage(
+            sprite.canvas,
+            x - width / 2,
+            y - height / 2,
+            width,
+            height
+          );
+          return;
+        }
+
+        context.save();
+        context.translate(x, y);
+        context.rotate(rotation);
+        context.drawImage(sprite.canvas, -width / 2, -height / 2, width, height);
+        context.restore();
+      }
+
+      function updateAndDrawExplosion() {
+        const progress = Math.min(phaseElapsed / EXPLOSION_DURATION, 1);
+        const travel = sampleExplosionTravel(phaseElapsed);
+        const outMargin = 90;
+        const trailFade = 1 - smoothstep(1.75, 2.15, phaseElapsed);
+        const motionDecay = Math.exp(-EXPLOSION_DRAG * phaseElapsed);
+        /* 非主角粒子在爆发末段淡出删减，词云只留 50 句 */
+        const pruneFade = 1 - smoothstep(1.6, 2.12, phaseElapsed);
+        const centerX = viewWidth / 2;
+        const centerY = viewHeight * 0.47;
+
+        /* 喷发与镜头推近同时发生，推近结束后才开始归位 */
+        cloudZoom = 1 + (CLOUD_ZOOM_TARGET - 1)
+          * smoothstep(0.2, 1.05, phaseElapsed);
+
+        updateExplosionBackground(progress);
+        /* 深色背景在归位的同时压下来，到词云时已完成换场 */
+        darkLayer.style.opacity = String(smoothstep(0.55, 0.99, progress));
+
+        for (let i = 0; i < heartParticleCursor; i++) {
+          const particle = heartParticles[i];
+          if (!particle.active) continue;
+
+          const trailIndex = i * 3;
+          trailX[trailIndex + 2] = trailX[trailIndex + 1];
+          trailY[trailIndex + 2] = trailY[trailIndex + 1];
+          trailX[trailIndex + 1] = trailX[trailIndex];
+          trailY[trailIndex + 1] = trailY[trailIndex];
+          trailX[trailIndex] = particle.x;
+          trailY[trailIndex] = particle.y;
+
+          if (particle.heroItem) {
+            const item = particle.heroItem;
+
+            /* 喷发与推近先完成，0.95 秒起收束，1.95 秒前站到词云位置 */
+            const seek = smoothstep(0.95, 1.95, phaseElapsed);
+            projectCloudItem(item, 1, 0, 1, 0, centerX, centerY, 0);
+
+            /* 收着走：只飞目标方向的一小段，剩下的交给归位插值 */
+            const ballisticX = particle.startX + particle.velocityX * travel * 0.85;
+            const ballisticY = particle.startY + particle.velocityY * travel * 0.85;
+            const deltaX = item.screenX - ballisticX;
+            const deltaY = item.screenY - ballisticY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY) || 1;
+            const arc = Math.sin(seek * Math.PI) * 26 * particle.arcSign;
+            const nextX = ballisticX + deltaX * seek
+              - deltaY / distance * arc;
+            const nextY = ballisticY + deltaY * seek
+              + deltaX / distance * arc;
+
+            const depthT = clamp((item.projectedScale - 0.64) / 0.38, 0, 1);
+            const targetAlpha = item.layerAlpha * (0.45 + 0.55 * depthT);
+            const startScale = particle.sprite.fontSize * 0.9 / item.fontSize;
+            const targetScale = item.projectedScale * cloudZoom;
+            const drawScale = startScale
+              + (targetScale - startScale) * seek;
+            const rotation = particle.originRotation * (1 - seek)
+              + item.tilt * seek;
+
+            particle.x = nextX;
+            particle.y = nextY;
+            particle.rotation = rotation;
+
+            const trailStrength = targetAlpha * trailFade
+              * clamp(particle.speedFactor * motionDecay * 0.6, 0, 1);
+
+            for (let frame = 2; frame >= 0; frame--) {
+              drawCloudSprite(
+                item,
+                trailX[trailIndex + frame],
+                trailY[trailIndex + frame],
+                drawScale * 0.98,
+                trailStrength * (0.06 + (2 - frame) * 0.05),
+                rotation
+              );
+            }
+
+            drawCloudSprite(
+              item,
+              nextX,
+              nextY,
+              drawScale,
+              targetAlpha,
+              rotation
+            );
+            continue;
+          }
+
+          let nextX = particle.startX + particle.velocityX * travel;
+          let nextY = particle.startY + particle.velocityY * travel;
+
+          /* 冲出屏幕的粒子直接移除，不做淡出 */
+          if (
+            nextX < -outMargin
+            || nextX > viewWidth + outMargin
+            || nextY < -outMargin
+            || nextY > viewHeight + outMargin
+          ) {
+            particle.active = false;
+            continue;
+          }
+
+          if (pruneFade <= 0.01) {
+            particle.active = false;
+            continue;
+          }
+
+          nextX += Math.sin(
+            animationTime * 0.7 + particle.driftPhase
+          ) * 4;
+          nextY += Math.cos(
+            animationTime * 0.6 + particle.driftPhase
+          ) * 3;
+
+          particle.x = nextX;
+          particle.y = nextY;
+          particle.depthScale = clamp(
+            1 + particle.directionZ
+              * (1 - Math.exp(-1.1 * phaseElapsed)) * 0.34,
+            0.6,
+            1.5
+          ) * (1 - 0.2 * smoothstep(0, 0.35, phaseElapsed));
+          particle.rotation = particle.originRotation
+            + particle.explosionSpin
+              * (1 - Math.exp(-1.3 * phaseElapsed)) / 1.3;
+
+          /* 只取前三帧位置做残影，速度越慢残影越淡，热路径无模糊 */
+          const trailStrength = particle.opacity * trailFade * pruneFade
+            * clamp(particle.speedFactor * motionDecay * 0.6, 0, 1);
+
+          for (let frame = 2; frame >= 0; frame--) {
+            drawExplosionSprite(
+              particle,
+              trailX[trailIndex + frame],
+              trailY[trailIndex + frame],
+              particle.depthScale * 0.96,
+              trailStrength * (0.07 + (2 - frame) * 0.06),
+              particle.rotation
+            );
+          }
+
+          drawExplosionSprite(
+            particle,
+            particle.x,
+            particle.y,
+            particle.depthScale,
+            particle.opacity * 0.82 * pruneFade,
+            particle.rotation
+          );
+        }
+
+        /* 峰值（第 1 秒）叠加 0.15 秒白闪，透明度上限 0.5 */
+        const flashDistance = Math.abs(phaseElapsed - FLASH_CENTER);
+        if (flashDistance <= FLASH_HALF) {
+          const flashAlpha = FLASH_PEAK * Math.cos(
+            (flashDistance / FLASH_HALF) * Math.PI / 2
+          );
+
+          context.globalAlpha = clamp(flashAlpha, 0, FLASH_PEAK);
+          context.fillStyle = "#ffffff";
+          context.fillRect(0, 0, viewWidth, viewHeight);
+        }
+
+        context.globalAlpha = 1;
+
+        if (progress >= 1) {
+          finishExplosion();
+          enterWordCloud();
+        }
+      }
+
+      /* 主角粒子直接画目标句子的词云贴图，换场时像素级对齐 */
+      function drawCloudSprite(item, x, y, scale, alpha, rotation) {
+        const width = item.width * scale;
+        const height = item.height * scale;
+
+        context.globalAlpha = alpha;
+        context.save();
+        context.translate(x, y);
+        if (rotation !== 0) context.rotate(rotation);
+        context.drawImage(item.sprite, -width / 2, -height / 2, width, height);
+        context.restore();
+      }
+
+      function finishExplosion() {
+        /* 50 句已在爆发中归位，其余粒子已淡出，直接清场 */
+        for (let i = 0; i < heartParticleCursor; i++) {
+          heartParticles[i].active = false;
+        }
+      }
+
+      function compareCloudDepth(a, b) {
+        return a.projectedZ - b.projectedZ;
+      }
+
+      function updateCloudRotation(delta) {
+        if (focusTurning) {
+          focusTurn = Math.min(1, focusTurn + delta / 0.9);
+          const ease = smoothstep(0, 1, focusTurn);
+
+          cloudManualRotation = focusTurnFromYaw
+            + (focusTurnToYaw - focusTurnFromYaw) * ease;
+          cloudPitch = focusTurnFromPitch
+            + (focusTurnToPitch - focusTurnFromPitch) * ease;
+          cloudAutoWeight = 0;
+          cloudInertiaY = 0;
+          cloudInertiaPitch = 0;
+
+          if (focusTurn >= 1) {
+            focusTurning = false;
+            focusItem = focusTargetItem;
+            focusTargetItem = null;
+            focusMix = 0;
+
+            /* 记录聚焦瞬间的位置，放大时从这里滑到画面正中 */
+            const totalYaw = cloudAutoRotation + cloudManualRotation;
+            projectCloudItem(
+              focusItem,
+              Math.cos(totalYaw),
+              Math.sin(totalYaw),
+              Math.cos(cloudPitch),
+              Math.sin(cloudPitch),
+              viewWidth / 2,
+              viewHeight * 0.47,
+              0
+            );
+            focusFromX = focusItem.screenX;
+            focusFromY = focusItem.screenY;
+          }
+
+          return;
+        }
+
+        if (!cloudDragging) {
+          cloudManualRotation += cloudInertiaY * delta;
+          cloudPitch = clamp(
+            cloudPitch + cloudInertiaPitch * delta,
+            -MAX_PITCH,
+            MAX_PITCH
+          );
+
+          const inertiaDecay = Math.exp(-3.2 * delta);
+          cloudInertiaY *= inertiaDecay;
+          cloudInertiaPitch *= inertiaDecay;
+          cloudAutoWeight = Math.min(1, cloudAutoWeight + delta / 1.5);
+        }
+
+        /* 整体缓慢公转 */
+        cloudAutoRotation += delta * 0.05 * cloudAutoWeight;
+      }
+
+      function drawBackgroundSpots(alphaScale) {
+        const limit = degraded ? 2 : BACKGROUND_SPOT_COUNT;
+        const scale = alphaScale === undefined ? 1 : alphaScale;
+
+        context.globalAlpha = scale;
+
+        for (let i = 0; i < limit; i++) {
+          const spot = backgroundSpots[i];
+          const x = spot.baseX * viewWidth + Math.sin(
+            animationTime * spot.speed + spot.phase
+          ) * spot.moveX;
+          const y = spot.baseY * viewHeight + Math.cos(
+            animationTime * spot.speed * 0.83 + spot.phase
+          ) * spot.moveY;
+
+          context.drawImage(
+            spot.sprite,
+            x - spot.radius,
+            y - spot.radius
+          );
+        }
+
+        context.globalAlpha = 1;
+      }
+
+      function drawSparkle(x, y, size, alpha) {
+        context.save();
+        context.translate(x, y);
+        context.globalAlpha = alpha;
+        context.fillStyle = "#ffffff";
+        context.shadowColor = "#ffffff";
+        context.shadowBlur = degraded ? 0 : 4;
+        context.beginPath();
+        context.moveTo(0, -size * 2);
+        context.lineTo(size * 0.45, -size * 0.45);
+        context.lineTo(size * 2, 0);
+        context.lineTo(size * 0.45, size * 0.45);
+        context.lineTo(0, size * 2);
+        context.lineTo(-size * 0.45, size * 0.45);
+        context.lineTo(-size * 2, 0);
+        context.lineTo(-size * 0.45, -size * 0.45);
+        context.closePath();
+        context.fill();
+        context.restore();
+      }
+
+      function drawCloudDecorations(cosY, sinY, cosX, sinX, centerX, centerY, fadeIn) {
+        const heartLimit = degraded ? CLOUD_HEART_COUNT / 2 : CLOUD_HEART_COUNT;
+        const lightLimit = degraded ? CLOUD_LIGHT_COUNT / 2 : CLOUD_LIGHT_COUNT;
+
+        for (let i = 0; i < heartLimit; i++) {
+          const item = cloudHearts[i];
+          const floatingY = item.y + Math.sin(
+            animationTime * item.floatSpeed + item.floatPhase
+          ) * 9;
+          const rotatedX = item.x * cosY + item.z * sinY;
+          const rotatedZ = -item.x * sinY + item.z * cosY;
+          const rotatedY = floatingY * cosX - rotatedZ * sinX;
+          const finalZ = floatingY * sinX + rotatedZ * cosX;
+          const perspective = CLOUD_FOCAL / (CLOUD_FOCAL + finalZ);
+
+          context.globalAlpha = item.opacity * clamp(
+            (perspective - 0.45) / 0.75,
+            0.15,
+            1
+          ) * fadeIn;
+          drawHeart(
+            context,
+            centerX + rotatedX * perspective,
+            centerY + rotatedY * perspective,
+            item.size * perspective,
+            item.color,
+            item.rotation + animationTime * item.rotationSpeed
+          );
+        }
+
+        for (let i = 0; i < lightLimit; i++) {
+          const item = cloudLights[i];
+          const rotatedX = item.x * cosY + item.z * sinY;
+          const rotatedZ = -item.x * sinY + item.z * cosY;
+          const rotatedY = item.y * cosX - rotatedZ * sinX;
+          const finalZ = item.y * sinX + rotatedZ * cosX;
+          const perspective = CLOUD_FOCAL / (CLOUD_FOCAL + finalZ);
+          const twinkle = 0.35 + 0.65 * (
+            0.5 + 0.5 * Math.sin(
+              animationTime * item.twinkleSpeed + item.twinklePhase
+            )
+          );
+
+          drawSparkle(
+            centerX + rotatedX * perspective,
+            centerY + rotatedY * perspective,
+            item.size * perspective,
+            item.opacity * twinkle * fadeIn
+          );
+        }
+
+        context.globalAlpha = 1;
+      }
+
+      /* 以相机为原点做透视：z 越负越远，缩放与透明度一起衰减 */
+      function projectCloudItem(
+        item,
+        cosY,
+        sinY,
+        cosX,
+        sinX,
+        centerX,
+        centerY,
+        extraZ
+      ) {
+        const floatingY = item.y + Math.sin(
+          animationTime * item.floatSpeed + item.floatPhase
+        ) * item.floatAmplitude;
+        const z = item.z + extraZ;
+        const rotatedX = item.x * cosY + z * sinY;
+        const rotatedZ = -item.x * sinY + z * cosY;
+        const rotatedY = floatingY * cosX - rotatedZ * sinX;
+        const finalZ = floatingY * sinX + rotatedZ * cosX;
+        const depth = clamp(finalZ + 0.8, 0, 1);
+        const perspective = 0.64 + 0.38 * depth;
+
+        item.projectedZ = finalZ;
+        item.projectedScale = perspective;
+        item.screenX = centerX
+          + rotatedX * viewWidth * 0.56 * perspective * cloudZoom;
+        item.screenY = centerY
+          + rotatedY * viewHeight * 0.46 * perspective * cloudZoom;
+      }
+
+      function drawCloud(delta, fadeIn) {
+        updateCloudRotation(delta);
+
+        const rotationY = cloudAutoRotation + cloudManualRotation;
+        const cosY = Math.cos(rotationY);
+        const sinY = Math.sin(rotationY);
+        const cosX = Math.cos(cloudPitch);
+        const sinX = Math.sin(cloudPitch);
+        const centerX = viewWidth / 2;
+        const centerY = viewHeight * 0.47;
+
+        drawCloudDecorations(
+          cosY,
+          sinY,
+          cosX,
+          sinX,
+          centerX,
+          centerY,
+          Math.min(1, phaseElapsed / 0.6)
+        );
+
+        for (let i = 0; i < CLOUD_ITEM_CAPACITY; i++) {
+          const item = cloudItems[i];
+
+          if (!item.active || item === focusItem) {
+            item.projectedZ = Infinity;
+            continue;
+          }
+
+          projectCloudItem(
+            item,
+            cosY,
+            sinY,
+            cosX,
+            sinX,
+            centerX,
+            centerY,
+            0
+          );
+        }
+
+        cloudDrawOrder.sort(compareCloudDepth);
+
+        for (let i = 0; i < CLOUD_ITEM_CAPACITY; i++) {
+          const item = cloudDrawOrder[i];
+          if (!item.active || item === focusItem) continue;
+
+          const drawScale = item.projectedScale * cloudZoom;
+          if (drawScale <= 0.02) continue;
+
+          const drawWidth = item.width * drawScale;
+          const drawHeight = item.height * drawScale;
+
+          if (
+            item.screenX < -drawWidth
+            || item.screenX > viewWidth + drawWidth
+            || item.screenY < -drawHeight
+            || item.screenY > viewHeight + drawHeight
+          ) {
+            continue;
+          }
+
+          const depthT = clamp((item.projectedScale - 0.64) / 0.38, 0, 1);
+          const depthAlpha = 0.45 + 0.55 * depthT;
+          const alpha = item.layerAlpha * depthAlpha * fadeIn
+            * (1 - 0.32 * focusMix);
+
+          context.globalAlpha = alpha;
+          context.save();
+          context.translate(item.screenX, item.screenY);
+          if (item.tilt !== 0) context.rotate(item.tilt);
+          context.drawImage(
+            item.sprite,
+            -drawWidth / 2,
+            -drawHeight / 2,
+            drawWidth,
+            drawHeight
+          );
+
+          /* 同色系斜向流光：裁出一条移动光带，用 lighter 提亮同一张贴图 */
+          if (!degraded && drawWidth > 24) {
+            const sweep = (animationTime * 0.26 + item.shinePhase) % 1;
+            const bandCenter = drawWidth * (-0.62 + sweep * 1.24);
+            const bandWidth = drawWidth * 0.26;
+
+            if (
+              bandCenter > -drawWidth * 0.62
+              && bandCenter < drawWidth * 0.62
+            ) {
+              context.beginPath();
+              context.rect(
+                bandCenter - bandWidth / 2,
+                -drawHeight / 2,
+                bandWidth,
+                drawHeight
+              );
+              context.clip();
+              context.globalCompositeOperation = "lighter";
+              context.globalAlpha = alpha * 0.28;
+              context.drawImage(
+                item.sprite,
+                -drawWidth / 2,
+                -drawHeight / 2,
+                drawWidth,
+                drawHeight
+              );
+            }
+          }
+
+          context.restore();
+        }
+
+        context.globalAlpha = 1;
+      }
+
+      /* 中央大字在“被点句子接管”时缩小并漂浮到上方 */
+      function getTitleCardLayout() {
+        const spacing = 0.86;
+        let totalHeight = 0;
+        let maxWidth = 0;
+
+        for (let i = 0; i < 3; i++) {
+          totalHeight += titleSprites[i].height * spacing;
+          maxWidth = Math.max(maxWidth, titleSprites[i].width);
+        }
+
+        const floatEase = titleFloatMix;
+        const scale = 1 - 0.52 * floatEase;
+        const x = viewWidth / 2 + floatEase * (
+          viewWidth * 0.19 - viewWidth / 2 + Math.sin(animationTime * 0.45) * 12
+        );
+        const y = viewHeight * 0.46 + floatEase * (
+          viewHeight * 0.13 - viewHeight * 0.46
+            + Math.cos(animationTime * 0.37) * 7
+        );
+
+        return {
+          x: x,
+          y: y,
+          scale: scale,
+          width: maxWidth * scale,
+          height: totalHeight * scale
+        };
+      }
+
+      function drawCenterTitle() {
+        const fade = smoothstep(0.1, 0.95, phaseElapsed);
+        if (fade <= 0) return;
+
+        const layout = getTitleCardLayout();
+        const pulse = 1 + 0.02 * Math.sin(animationTime * 1.7)
+          * (1 - titleFloatMix);
+        const spacing = 0.86;
+        const scale = layout.scale * pulse;
+        let totalHeight = 0;
+
+        for (let i = 0; i < 3; i++) {
+          totalHeight += titleSprites[i].height * spacing;
+        }
+
+        const glowWidth = Math.min(viewWidth * 1.08, 640) * scale;
+        const glowHeight = Math.max(260, totalHeight + 80) * scale;
+
+        context.globalAlpha = fade * (1 - titleFloatMix * 0.25);
+        context.drawImage(
+          titleGlowCanvas,
+          layout.x - glowWidth / 2,
+          layout.y - glowHeight / 2,
+          glowWidth,
+          glowHeight
+        );
+
+        let top = layout.y - totalHeight * scale / 2;
+
+        for (let i = 0; i < 3; i++) {
+          const sprite = titleSprites[i];
+          const width = sprite.width * scale;
+          const height = sprite.height * scale;
+          const slotHeight = sprite.height * spacing * scale;
+
+          context.globalAlpha = fade * (i === 2 ? 0.95 : 1);
+          context.drawImage(
+            sprite.canvas,
+            layout.x - width / 2,
+            top + (slotHeight - height) / 2,
+            width,
+            height
+          );
+
+          top += slotHeight;
+        }
+
+        context.globalAlpha = 1;
+      }
+
+      /* 每句被点中后放大成中心大字：按屏宽自动折成两行 */
+      function getFocusSprite(item) {
+        if (item.focusSprite) return item.focusSprite;
+
+        const compact = viewWidth < 600;
+        let fontSize = compact ? 42 : 50;
+        const maxWidth = viewWidth * 0.82;
+        const chars = Array.from(item.text);
+        let lines = [item.text];
+
+        cloudMeasureContext.font = "700 " + fontSize
+          + 'px "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif';
+
+        if (cloudMeasureContext.measureText(item.text).width > maxWidth) {
+          const middle = Math.ceil(chars.length / 2);
+          lines = [
+            chars.slice(0, middle).join(""),
+            chars.slice(middle).join("")
+          ];
+        }
+
+        let widest = 0;
+        for (let i = 0; i < lines.length; i++) {
+          widest = Math.max(
+            widest,
+            cloudMeasureContext.measureText(lines[i]).width
+          );
+        }
+
+        if (widest > maxWidth) {
+          fontSize = Math.max(18, Math.floor(fontSize * maxWidth / widest));
+        }
+
+        const font = "700 " + fontSize
+          + 'px "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif';
+        cloudMeasureContext.font = font;
+
+        let textWidth = 0;
+        for (let i = 0; i < lines.length; i++) {
+          textWidth = Math.max(
+            textWidth,
+            cloudMeasureContext.measureText(lines[i]).width
+          );
+        }
+
+        const padding = Math.ceil(fontSize * 0.55);
+        const lineHeight = fontSize * 1.28;
+        const width = Math.ceil(textWidth + padding * 2);
+        const height = Math.ceil(lineHeight * lines.length + padding * 1.5);
+        const sprite = document.createElement("canvas");
+        sprite.width = Math.ceil(width * TEXT_CACHE_SCALE);
+        sprite.height = Math.ceil(height * TEXT_CACHE_SCALE);
+
+        const spriteContext = sprite.getContext("2d");
+        spriteContext.scale(TEXT_CACHE_SCALE, TEXT_CACHE_SCALE);
+        spriteContext.font = font;
+        spriteContext.textAlign = "center";
+        spriteContext.textBaseline = "middle";
+        spriteContext.lineJoin = "round";
+
+        const firstY = padding * 0.75 + lineHeight * 0.5;
+
+        spriteContext.shadowColor = "rgba(26, 4, 14, 0.95)";
+        spriteContext.shadowBlur = Math.max(10, fontSize * 0.4);
+        spriteContext.fillStyle = "rgba(30, 5, 16, 0.9)";
+
+        for (let i = 0; i < lines.length; i++) {
+          spriteContext.fillText(
+            lines[i],
+            width / 2,
+            firstY + lineHeight * i
+          );
+        }
+
+        spriteContext.shadowColor = "rgba(255, 110, 160, 0.9)";
+        spriteContext.shadowBlur = Math.max(12, fontSize * 0.45);
+        spriteContext.fillStyle = item.color;
+
+        for (let i = 0; i < lines.length; i++) {
+          spriteContext.fillText(
+            lines[i],
+            width / 2,
+            firstY + lineHeight * i
+          );
+        }
+
+        item.focusSprite = {
+          canvas: sprite,
+          width: width,
+          height: height,
+          fontSize: fontSize
+        };
+
+        return item.focusSprite;
+      }
+
+      /* 点击句子：空间转向它，旧中心缩小漂浮，它放大并固定 */
+      function beginFocus(item) {
+        if (!item || item === focusItem) return;
+
+        if (focusItem) {
+          focusItem = null;
+          focusMix = 0;
+        }
+
+        const totalYaw = cloudAutoRotation + cloudManualRotation;
+        const baseYaw = Math.atan2(-item.x, item.z);
+        const turns = Math.round((totalYaw - baseYaw) / TAU);
+        const targetTotal = baseYaw + turns * TAU;
+        const radius = Math.sqrt(item.x * item.x + item.z * item.z) || 0.0001;
+
+        focusTurnFromYaw = cloudManualRotation;
+        focusTurnToYaw = targetTotal - cloudAutoRotation;
+        focusTurnFromPitch = cloudPitch;
+        focusTurnToPitch = clamp(
+          Math.atan2(item.y, radius),
+          -MAX_PITCH,
+          MAX_PITCH
+        );
+        focusTurn = 0;
+        focusTurning = true;
+        focusTargetItem = item;
+        titleFloatTarget = 1;
+      }
+
+      function updateFocus(delta) {
+        if (titleFloatMix !== titleFloatTarget) {
+          titleFloatMix += (titleFloatTarget - titleFloatMix)
+            * Math.min(1, delta * 4.5);
+
+          if (Math.abs(titleFloatTarget - titleFloatMix) < 0.002) {
+            titleFloatMix = titleFloatTarget;
+          }
+        }
+
+        if (focusItem && focusMix < 1) {
+          focusMix = Math.min(1, focusMix + delta / 0.55);
+        }
+      }
+
+      function drawFocusedItem() {
+        if (!focusItem) return;
+
+        const item = focusItem;
+        const sprite = getFocusSprite(item);
+        const mix = smoothstep(0, 1, focusMix);
+        const startScale = (item.fontSize * CLOUD_ZOOM_TARGET)
+          / sprite.fontSize;
+        const targetScale = Math.min(
+          1.15,
+          (viewWidth * 0.9) / sprite.width
+        );
+        const scale = startScale + (targetScale - startScale) * mix;
+        const centerX = viewWidth / 2;
+        const centerY = viewHeight * 0.47;
+        const x = focusFromX + (centerX - focusFromX) * mix;
+        const y = focusFromY + (centerY - focusFromY) * mix;
+        const width = sprite.width * scale;
+        const height = sprite.height * scale;
+
+        context.globalAlpha = 0.92 * mix;
+        context.drawImage(
+          titleGlowCanvas,
+          centerX - Math.min(viewWidth * 1.15, width * 1.9) / 2,
+          centerY - Math.max(240, height * 1.8) / 2,
+          Math.min(viewWidth * 1.15, width * 1.9),
+          Math.max(240, height * 1.8)
+        );
+
+        context.globalAlpha = mix;
+        context.drawImage(
+          sprite.canvas,
+          x - width / 2,
+          y - height / 2,
+          width,
+          height
+        );
+        context.globalAlpha = 1;
+      }
+
+      function handleCloudTap(x, y) {
+        if (phase !== "wordCloud" || focusTurning) return;
+
+        const now = Date.now();
+        if (now - lastTapAt < 450) return;
+        lastTapAt = now;
+
+        /* 漂浮中的中心大字：点它回中，并释放当前聚焦 */
+        if (titleFloatMix > 0.4) {
+          const layout = getTitleCardLayout();
+
+          if (
+            Math.abs(x - layout.x) <= layout.width / 2 + 16
+            && Math.abs(y - layout.y) <= layout.height / 2 + 12
+          ) {
+            titleFloatTarget = 0;
+            if (focusItem) {
+              focusItem = null;
+              focusMix = 0;
+            }
+            return;
+          }
+        }
+
+        for (let i = CLOUD_ITEM_CAPACITY - 1; i >= 0; i--) {
+          const item = cloudDrawOrder[i];
+          if (!item.active || item === focusItem) continue;
+
+          const scale = item.projectedScale * cloudZoom;
+          const halfWidth = item.width * scale / 2;
+          const halfHeight = item.height * scale / 2;
+          const cosTilt = Math.abs(Math.cos(item.tilt));
+          const sinTilt = Math.abs(Math.sin(item.tilt));
+          const boxX = halfWidth * cosTilt + halfHeight * sinTilt;
+          const boxY = halfWidth * sinTilt + halfHeight * cosTilt;
+
+          if (
+            Math.abs(x - item.screenX) <= boxX + 4
+            && Math.abs(y - item.screenY) <= boxY + 4
+          ) {
+            beginFocus(item);
+            return;
+          }
+        }
+      }
+
+      function enterWordCloud() {
+        phase = "wordCloud";
+        phaseElapsed = 0;
+        cloudAutoWeight = 1;
+        cloudZoom = CLOUD_ZOOM_TARGET;
+        darkLayer.style.opacity = "1";
+        scene.classList.add("word-cloud-active");
+        dragHint.classList.remove("hidden");
+      }
+
+      function handleTouchStart(event) {
+        if (event.target.closest(".scene-controls")) return;
+        if (phase !== "wordCloud" || event.touches.length !== 1) return;
+
+        event.preventDefault();
+        const touch = event.touches[0];
+        cloudDragging = true;
+        cloudAutoWeight = 0;
+        cloudInertiaY = 0;
+        cloudInertiaPitch = 0;
+        lastTouchX = touch.clientX;
+        lastTouchY = touch.clientY;
+        lastTouchTime = performance.now();
+        tapStartX = touch.clientX;
+        tapStartY = touch.clientY;
+        tapStartTime = lastTouchTime;
+        tapMoved = false;
+        dragHint.classList.add("hidden");
+      }
+
+      function handleTouchMove(event) {
+        if (!cloudDragging || event.touches.length !== 1) return;
+
+        event.preventDefault();
+        const touch = event.touches[0];
+        const now = performance.now();
+        const deltaTime = Math.max(0.008, (now - lastTouchTime) / 1000);
+        const deltaX = touch.clientX - lastTouchX;
+        const deltaY = touch.clientY - lastTouchY;
+        const rotationDelta = deltaX * 0.006;
+        const pitchDelta = deltaY * 0.004;
+
+        if (
+          Math.abs(touch.clientX - tapStartX) > 10
+          || Math.abs(touch.clientY - tapStartY) > 10
+        ) {
+          tapMoved = true;
+        }
+
+        cloudManualRotation += rotationDelta;
+        cloudPitch = clamp(
+          cloudPitch + pitchDelta,
+          -MAX_PITCH,
+          MAX_PITCH
+        );
+        cloudInertiaY = clamp(rotationDelta / deltaTime, -4, 4);
+        cloudInertiaPitch = clamp(pitchDelta / deltaTime, -2, 2);
+
+        lastTouchX = touch.clientX;
+        lastTouchY = touch.clientY;
+        lastTouchTime = now;
+      }
+
+      function handleTouchEnd(event) {
+        if (event.target.closest(".scene-controls")) return;
+        if (phase === "wordCloud") {
+          event.preventDefault();
+        }
+
+        if (
+          event.type === "touchend"
+          && !tapMoved
+          && performance.now() - tapStartTime < 500
+        ) {
+          const touch = event.changedTouches[0];
+          if (touch) handleCloudTap(touch.clientX, touch.clientY);
+        }
+
+        cloudDragging = false;
+      }
+
+      scene.addEventListener("touchstart", handleTouchStart, { passive: false });
+      scene.addEventListener("touchmove", handleTouchMove, { passive: false });
+      scene.addEventListener("touchend", handleTouchEnd, { passive: false });
+      scene.addEventListener("touchcancel", handleTouchEnd, { passive: false });
+
+      /* 桌面端用鼠标点句子 */
+      scene.addEventListener("click", (event) => {
+        if (phase !== "wordCloud") return;
+        if (event.target.closest(".scene-controls")) return;
+        handleCloudTap(event.clientX, event.clientY);
+      });
+
+      function updateMusicButton() {
+        volumeIcon.hidden = bgm.muted;
+        muteIcon.hidden = !bgm.muted;
+        musicButton.setAttribute("aria-label", bgm.muted ? "恢复音乐" : "静音");
+      }
+
+      function attemptBgmPlay() {
+        bgm.volume = 0.4;
+        if (bgm.muted) return;
+
+        const playPromise = bgm.play();
+        if (playPromise && playPromise.catch) {
+          playPromise.catch(() => {
+            showToast("点击音乐按钮可开启音乐");
+          });
+        }
+      }
+
+      function updatePauseButton() {
+        pauseIcon.hidden = isPaused;
+        playIcon.hidden = !isPaused;
+        pauseButton.setAttribute("aria-label", isPaused ? "继续" : "暂停");
+        pauseButton.title = isPaused ? "继续" : "暂停";
+      }
+
+      function ensureAnimationLoop() {
+        if (
+          hasStarted
+          && !isPaused
+          && !document.hidden
+          && animationFrameId === 0
+        ) {
+          lastFrameTime = 0;
+          animationFrameId = window.requestAnimationFrame(animate);
+        }
+      }
+
+      function stopAnimationLoop() {
+        if (animationFrameId !== 0) {
+          window.cancelAnimationFrame(animationFrameId);
+          animationFrameId = 0;
+        }
+        lastFrameTime = 0;
+        fpsWindowStart = 0;
+        fpsFrameCount = 0;
+        lowFpsDuration = 0;
+      }
+
+      function openMessageModal() {
+        messageModal.classList.add("open");
+        messageModal.setAttribute("aria-hidden", "false");
+        window.setTimeout(() => messageInput.focus(), 50);
+      }
+
+      function closeMessageModal() {
+        messageModal.classList.remove("open");
+        messageModal.setAttribute("aria-hidden", "true");
+        messageInput.value = "";
+      }
+
+      function addMessageToCloud(text) {
+        const index = BASE_CLOUD_COUNT + messageWriteCursor;
+        const item = cloudItems[index];
+        messageWriteCursor = (messageWriteCursor + 1) % MESSAGE_POOL_SIZE;
+
+        item.active = true;
+        item.text = text;
+        item.layer = 0;
+        item.x = (Math.random() * 2 - 1) * 0.5;
+        item.y = (Math.random() * 2 - 1) * 0.9;
+        item.z = -0.12 + Math.random() * 0.1;
+        item.color = CLOUD_COLORS[Math.floor(Math.random() * 3)];
+        item.floatAmplitude = 0.015 + Math.random() * 0.02;
+        item.floatSpeed = 0.45 + Math.random() * 0.4;
+        item.floatPhase = Math.random() * TAU;
+        item.layerAlpha = 1;
+        item.fontSize = viewWidth < 600 ? 15 : 17;
+        item.tilt = ((Math.random() * 2 - 1) * 4) * Math.PI / 180;
+
+        /* 新句子仅此处渲染一次，之后统一 drawImage；对象本身循环复用 */
+        renderCloudItemSprite(item);
+      }
+
+      async function copyCurrentLink() {
+        try {
+          if (!navigator.clipboard || !window.isSecureContext) {
+            throw new Error("Clipboard API unavailable");
+          }
+          await navigator.clipboard.writeText(window.location.href);
+        } catch (error) {
+          const input = document.createElement("textarea");
+          input.value = window.location.href;
+          input.style.position = "fixed";
+          input.style.opacity = "0";
+          document.body.appendChild(input);
+          input.select();
+          document.execCommand("copy");
+          input.remove();
+        }
+        showToast("链接已复制");
+      }
+
+      document.getElementById("shareButton").addEventListener("click", async () => {
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: document.title,
+              text: "生日快乐！",
+              url: window.location.href
+            });
+            return;
+          } catch (error) {
+            if (error && error.name === "AbortError") return;
+          }
+        }
+        await copyCurrentLink();
+      });
+
+      musicButton.addEventListener("click", () => {
+        bgm.muted = !bgm.muted;
+        if (!bgm.muted && bgm.paused && hasStarted) {
+          attemptBgmPlay();
+        }
+        updateMusicButton();
+      });
+
+      pauseButton.addEventListener("click", () => {
+        if (!hasStarted) return;
+        isPaused = !isPaused;
+        updatePauseButton();
+
+        if (isPaused) {
+          stopAnimationLoop();
+        } else {
+          ensureAnimationLoop();
+        }
+      });
+
+      document.getElementById("messageButton").addEventListener("click", openMessageModal);
+      document.getElementById("messageCancel").addEventListener("click", closeMessageModal);
+
+      messageModal.addEventListener("click", (event) => {
+        if (event.target === messageModal) closeMessageModal();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && messageModal.classList.contains("open")) {
+          closeMessageModal();
+        }
+      });
+
+      messageForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const text = messageInput.value.trim();
+        if (!text) return;
+
+        addMessageToCloud(text);
+        closeMessageModal();
+        showToast("留言已加入");
+      });
+
+      function replayAnimation() {
+        stopAnimationLoop();
+        closeMessageModal();
+
+        hasStarted = false;
+        isPaused = false;
+        phase = "snow";
+        phaseElapsed = 0;
+        animationTime = 0;
+        heartParticleCursor = 0;
+        pencilArcProgress = 0;
+        cloudAutoRotation = 0;
+        cloudManualRotation = 0;
+        cloudPitch = 0;
+        cloudInertiaY = 0;
+        cloudInertiaPitch = 0;
+        cloudAutoWeight = 1;
+        cloudDragging = false;
+        cloudZoom = 1;
+        focusItem = null;
+        focusTargetItem = null;
+        focusTurning = false;
+        focusTurn = 0;
+        focusMix = 0;
+        titleFloatMix = 0;
+        titleFloatTarget = 0;
+        dragHint.classList.remove("hidden");
+        messageWriteCursor = 0;
+        lowFpsDuration = 0;
+
+        for (let i = 0; i < HEART_PARTICLE_COUNT; i++) {
+          heartParticles[i].active = false;
+        }
+        for (let i = 0; i < AMBIENT_COUNT; i++) {
+          resetAmbientParticle(ambientParticles[i], true);
+        }
+        for (let i = 0; i < MESSAGE_POOL_SIZE; i++) {
+          cloudItems[BASE_CLOUD_COUNT + i].active = false;
+        }
+
+        pinkLayer1.style.opacity = "0";
+        pinkLayer2.style.opacity = "0";
+        pinkLayer3.style.opacity = "0";
+        darkLayer.style.opacity = "0";
+        cloudZoom = 1;
+
+        document.body.classList.remove("scene-active");
+        scene.classList.remove("word-cloud-active");
+        scene.setAttribute("aria-hidden", "true");
+        card.setAttribute("aria-hidden", "false");
+        button.disabled = false;
+        toast.classList.remove("visible");
+
+        bgm.pause();
+        bgm.currentTime = 0;
+        updatePauseButton();
+        resizeCanvas();
+      }
+
+      document.getElementById("replayButton").addEventListener("click", replayAnimation);
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          stopAnimationLoop();
+        } else {
+          ensureAnimationLoop();
+        }
+      });
+
+      function applyPerformanceDegrade() {
+        if (degraded) return;
+        degraded = true;
+
+        const heartLimit = getHeartParticleLimit();
+        for (let i = heartLimit; i < HEART_PARTICLE_COUNT; i++) {
+          heartParticles[i].active = false;
+        }
+        heartParticleCursor = Math.min(heartParticleCursor, heartLimit);
+        context.shadowBlur = 0;
+        showToast("已自动切换流畅模式");
+      }
+
+      function trackPerformance(timestamp) {
+        if (degraded) return;
+
+        if (fpsWindowStart === 0) {
+          fpsWindowStart = timestamp;
+          fpsFrameCount = 0;
+        }
+
+        fpsFrameCount++;
+        const windowDuration = (timestamp - fpsWindowStart) / 1000;
+
+        if (windowDuration >= 1) {
+          const fps = fpsFrameCount / windowDuration;
+          lowFpsDuration = fps < 40
+            ? lowFpsDuration + windowDuration
+            : 0;
+
+          fpsWindowStart = timestamp;
+          fpsFrameCount = 0;
+
+          if (lowFpsDuration >= 3) {
+            applyPerformanceDegrade();
+          }
+        }
+      }
+
+      function easeInOutSine(progress) {
+        return -(Math.cos(Math.PI * progress) - 1) / 2;
+      }
+
+      function renderFrame(delta) {
+        if (!context) return;
+
+        context.clearRect(0, 0, viewWidth, viewHeight);
+        phaseElapsed += delta;
+
+        if (phase === "snow") {
+          drawAmbientParticles(delta, 1);
+
+          if (phaseElapsed >= SNOW_DURATION) {
+            phase = "heart";
+            phaseElapsed -= SNOW_DURATION;
+          }
+          return;
+        }
+
+        if (phase === "heart") {
+          const linearProgress = Math.min(
+            phaseElapsed / HEART_DRAW_DURATION,
+            1
+          );
+          const easedProgress = easeInOutSine(linearProgress);
+
+          updatePencilPosition(easedProgress);
+          spawnHeartParticles(Math.floor(
+            getHeartParticleLimit() * pencilArcProgress
+          ));
+
+          drawAmbientParticles(delta, 1);
+          drawHeartParticles(context, 1, animationTime, true);
+          drawPencil(context, pencilX, pencilY, pencilAngle, 1);
+
+          if (phaseElapsed >= HEART_DRAW_DURATION) {
+            updatePencilPosition(1);
+            spawnHeartParticles(getHeartParticleLimit());
+            recordHeartOrigins();
+            updatePencilPosition(HEART_REST_PROGRESS);
+            phase = "heartBreath";
+            phaseElapsed -= HEART_DRAW_DURATION;
+          }
+          return;
+        }
+
+        if (phase === "heartBreath") {
+          const breathScale = 1 + 0.03 * Math.sin(
+            TAU * Math.min(phaseElapsed, HEART_BREATH_DURATION)
+            / HEART_BREATH_DURATION
+          );
+
+          drawAmbientParticles(delta, 1);
+          drawHeartParticles(context, breathScale, animationTime, true);
+          drawPencil(context, pencilX, pencilY, pencilAngle, 1);
+
+          if (phaseElapsed >= HEART_BREATH_DURATION) {
+            recordHeartOrigins();
+            phase = "recall";
+            phaseElapsed -= HEART_BREATH_DURATION;
+          }
+          return;
+        }
+
+        if (phase === "recall") {
+          drawAmbientParticles(delta, 1);
+          updateRecallParticles();
+          drawHeartParticles(context, 1, animationTime, true);
+          drawPencil(context, pencilX, pencilY, pencilAngle, 1);
+
+          if (phaseElapsed >= RECALL_DURATION) {
+            updateRecallPencil(1);
+            phase = "gather";
+            phaseElapsed -= RECALL_DURATION;
+          }
+          return;
+        }
+
+        if (phase === "gather") {
+          drawAmbientParticles(delta, 1);
+          updateAndDrawGatherBall();
+
+          if (phaseElapsed >= GATHER_DURATION) {
+            phase = "explode";
+            phaseElapsed -= GATHER_DURATION;
+            prepareExplosion();
+          }
+          return;
+        }
+
+        if (phase === "explode") {
+          drawAmbientParticles(delta, 1);
+          updateAndDrawExplosion();
+          return;
+        }
+
+        if (phase === "wordCloud") {
+          updateFocus(delta);
+          drawBackgroundSpots(Math.min(1, phaseElapsed / 0.8));
+          drawCloud(delta, 1);
+          drawCenterTitle();
+          drawFocusedItem();
+        }
+      }
+
+      function animate(timestamp) {
+        animationFrameId = window.requestAnimationFrame(animate);
+
+        if (lastFrameTime === 0) {
+          lastFrameTime = timestamp;
+          return;
+        }
+
+        const elapsed = timestamp - lastFrameTime;
+        if (elapsed < FRAME_INTERVAL - 0.5) return;
+
+        lastFrameTime = timestamp - (elapsed % FRAME_INTERVAL);
+        const delta = Math.min(elapsed / 1000, 0.05);
+        animationTime += delta;
+        renderFrame(delta);
+        trackPerformance(timestamp);
+      }
+
+      button.addEventListener("click", () => {
+        if (hasStarted) return;
+
+        hasStarted = true;
+        button.disabled = true;
+        resizeCanvas();
+        attemptBgmPlay();
+
+        document.body.classList.add("scene-active");
+        scene.setAttribute("aria-hidden", "false");
+
+        if (context) {
+          renderFrame(0);
+          ensureAnimationLoop();
+        }
+
+        window.setTimeout(() => {
+          card.setAttribute("aria-hidden", "true");
+        }, 800);
+      });
+
+      window.addEventListener("resize", resizeCanvas, { passive: true });
+      bgm.volume = 0.4;
+      updateMusicButton();
+      updatePauseButton();
+      resizeCanvas();
+      initializePoolsAndCaches();
+    })();
+  <\/script>
+</body>
+</html>
+
+  </script>
+
+  <script>
+    (function () {
+      "use strict";
+
+      /* ============================================================
+       * 配置：改这里就能换成你们的日期和称呼
+       * ============================================================ */
+      var CONFIG = {
+        startDate: { year: 2026, month: 11, day: 16 },   // 在一起的起点
+        birthday: { month: 12, day: 10 },                // 生日
+        period: { start: 3, end: 10 },                   // 每月关怀区间
+        name: "我的女孩",
+        storage: {
+          messages: "her_site_messages_v1",
+          popupDate: "her_site_popup_date_v1",
+          musicMuted: "her_site_music_muted_v1"
+        }
+      };
+
+      var SCREEN_IDS = ["home", "birthdays", "birthday", "period", "surprise"];
+
+      var el = {
+        app: document.getElementById("app"),
+        days: document.getElementById("days"),
+        timerDate: document.getElementById("timerDate"),
+        bgHearts: document.getElementById("bgHearts"),
+        modal: document.getElementById("modal"),
+        modalEmoji: document.getElementById("modalEmoji"),
+        modalTitle: document.getElementById("modalTitle"),
+        modalText: document.getElementById("modalText"),
+        modalYes: document.getElementById("modalYes"),
+        modalNo: document.getElementById("modalNo"),
+        chatCard: document.getElementById("chatCard"),
+        chatList: document.getElementById("chatList"),
+        chatForm: document.getElementById("chatForm"),
+        chatInput: document.getElementById("chatInput"),
+        chatToggle: document.getElementById("chatToggle"),
+        birthdayGrid: document.getElementById("birthdayGrid"),
+        surpriseBtn: document.getElementById("surpriseBtn"),
+        surpriseTag: document.getElementById("surpriseTag"),
+        surpriseTitle: document.getElementById("surpriseTitle"),
+        surpriseBody: document.getElementById("surpriseBody"),
+        rerollBtn: document.getElementById("rerollBtn"),
+        hugBtn: document.getElementById("hugBtn"),
+        birthdayModule: document.getElementById("birthdayModule"),
+        birthdayCountdown: document.getElementById("birthdayCountdown"),
+        birthdayFrame: document.getElementById("birthdayFrame"),
+        musicBtn: document.getElementById("musicBtn"),
+        musicIcon: document.getElementById("musicIcon"),
+        toast: document.getElementById("toast")
+      };
+
+      /* ============================================================
+       * 小工具
+       * ============================================================ */
+      function pad2(value) {
+        return value < 10 ? "0" + value : String(value);
+      }
+
+      function startOfDay(date) {
+        var copy = new Date(date.getTime());
+        copy.setHours(0, 0, 0, 0);
+        return copy;
+      }
+
+      function dateKey(date) {
+        return date.getFullYear() + "-" + pad2(date.getMonth() + 1) + "-" + pad2(date.getDate());
+      }
+
+      function randomPick(list) {
+        return list[Math.floor(Math.random() * list.length)];
+      }
+
+      function showToast(text) {
+        el.toast.textContent = text;
+        el.toast.classList.add("is-show");
+        window.clearTimeout(showToast.timer);
+        showToast.timer = window.setTimeout(function () {
+          el.toast.classList.remove("is-show");
+        }, 1800);
+      }
+
+      function safeGet(key) {
+        try {
+          return window.localStorage.getItem(key);
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function safeSet(key, value) {
+        try {
+          window.localStorage.setItem(key, value);
+        } catch (error) {
+          /* 隐私模式下忽略 */
+        }
+      }
+
+      /* ============================================================
+       * 视口高度：兼容微信底部工具栏与键盘
+       * ============================================================ */
+      function syncViewport() {
+        var viewport = window.visualViewport;
+        var height = viewport ? viewport.height : window.innerHeight;
+        document.documentElement.style.setProperty("--app-h", height + "px");
+      }
+
+      window.addEventListener("resize", syncViewport);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", syncViewport);
+      }
+      syncViewport();
+
+      /* ============================================================
+       * 计时器
+       * ============================================================ */
+      var startDate = new Date(CONFIG.startDate.year, CONFIG.startDate.month - 1, CONFIG.startDate.day);
+      var dayNumberAnimation = 0;
+
+      function getDays() {
+        var diff = startOfDay(new Date()).getTime() - startOfDay(startDate).getTime();
+        return Math.floor(diff / 86400000) + 1;
+      }
+
+      function renderDays(animate) {
+        var days = getDays();
+        var from = animate ? Math.max(1, days - 120) : days;
+
+        window.cancelAnimationFrame(dayNumberAnimation);
+
+        if (!animate) {
+          el.days.textContent = days;
+        } else {
+          var startedAt = performance.now();
+          var step = function (now) {
+            var progress = Math.min(1, (now - startedAt) / 900);
+            var eased = 1 - Math.pow(1 - progress, 3);
+            el.days.textContent = Math.round(from + (days - from) * eased);
+            if (progress < 1) {
+              dayNumberAnimation = window.requestAnimationFrame(step);
+            } else {
+              el.days.textContent = days;
+            }
+          };
+          dayNumberAnimation = window.requestAnimationFrame(step);
+        }
+
+        el.timerDate.textContent =
+          "从 " + CONFIG.startDate.year + " 年 " +
+          CONFIG.startDate.month + " 月 " +
+          CONFIG.startDate.day + " 日开始";
+      }
+
+      function scheduleMidnightRefresh() {
+        var now = new Date();
+        var next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 10);
+        window.setTimeout(function () {
+          renderDays(false);
+          scheduleMidnightRefresh();
+        }, Math.max(2000, next.getTime() - now.getTime()));
+      }
+
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) {
+          renderDays(false);
+          syncViewport();
+        }
+      });
+
+      /* ============================================================
+       * 背景漂浮的心
+       * ============================================================ */
+      function buildBackgroundHearts() {
+        var hearts = ["♡", "❤", "✦", "✧", "♡"];
+        var fragment = document.createDocumentFragment();
+
+        for (var i = 0; i < 16; i++) {
+          var span = document.createElement("span");
+          span.className = "bg-heart";
+          span.textContent = hearts[i % hearts.length];
+          span.style.left = (Math.random() * 96 + 2) + "%";
+          span.style.fontSize = (10 + Math.random() * 12) + "px";
+          span.style.animationDuration = (12 + Math.random() * 12) + "s";
+          span.style.animationDelay = (-Math.random() * 20) + "s";
+          span.style.opacity = String(0.35 + Math.random() * 0.5);
+          fragment.appendChild(span);
+        }
+
+        el.bgHearts.appendChild(fragment);
+      }
+
+      /* ============================================================
+       * 屏幕切换
+       * ============================================================ */
+      var currentScreen = "home";
+
+      function pageForType(type) {
+        if (type === "birthday") return "birthday";
+        if (type === "period") return "period";
+        return "surprise";
+      }
+
+      function openBirthdayFrame() {
+        var frame = el.birthdayFrame;
+        if (!frame || frame.getAttribute("data-loaded") === "1") return;
+
+        /* 生日站已内嵌在主文件里，用 srcdoc 装载，保持样式与脚本隔离 */
+        var doc = document.getElementById("birthdayDoc");
+        if (doc && "srcdoc" in frame) {
+          frame.srcdoc = doc.textContent.replace(/<\\\/script>/g, "</scr" + "ipt>");
+        } else {
+          frame.setAttribute("src", frame.getAttribute("data-src"));
+        }
+
+        frame.setAttribute("data-loaded", "1");
+      }
+
+      function showScreen(name, updateHash) {
+        if (SCREEN_IDS.indexOf(name) === -1) name = "home";
+
+        currentScreen = name;
+        document.body.setAttribute("data-screen", name);
+
+        var screens = document.querySelectorAll(".screen");
+        for (var i = 0; i < screens.length; i++) {
+          screens[i].classList.toggle("is-active", screens[i].id === "screen-" + name);
+        }
+
+        if (name === "home") {
+          renderDays(false);
+          renderBirthdayModule();
+        }
+        if (name === "surprise") {
+          renderSurprise(null);
+        }
+        if (name === "birthdays") {
+          renderBirthdayGrid();
+        }
+        if (name === "birthday") {
+          openBirthdayFrame();
+        }
+
+        if (updateHash !== false) {
+          try {
+            var target = name === "home" ? window.location.pathname + window.location.search : "#" + name;
+            window.history.replaceState(null, "", target);
+          } catch (error) {
+            /* file:// 下可能不支持，忽略 */
+          }
+        }
+      }
+
+      document.addEventListener("click", function (event) {
+        var back = event.target.closest("[data-back]");
+        if (back) {
+          showScreen("home");
+        }
+      });
+
+      window.addEventListener("hashchange", function () {
+        var name = window.location.hash.replace("#", "");
+        if (SCREEN_IDS.indexOf(name) !== -1) {
+          showScreen(name, false);
+        }
+      });
+
+      /* ============================================================
+       * 每日弹窗：生日 > 生理期 > 默认，每天只弹一次
+       * ============================================================ */
+      var DAILY_LINES = [
+        "今天也要开开心心的呀。",
+        "刚刚路过一家店，突然很想带你去。",
+        "想把今天的第一句早安留给你。",
+        "今天有没有好好吃饭？",
+        "不用很厉害，你在我这里永远是第一名。",
+        "想你的时候，连风都是甜的。",
+        "今天也是被我惦记的一天。"
+      ];
+
+      var dailyType = "default";
+
+      function pickDailyType() {
+        var now = new Date();
+        var month = now.getMonth() + 1;
+        var day = now.getDate();
+
+        if (month === CONFIG.birthday.month && day === CONFIG.birthday.day) {
+          return "birthday";
+        }
+        if (day >= CONFIG.period.start && day <= CONFIG.period.end) {
+          return "period";
+        }
+        return "default";
+      }
+
+      function dailyCopy(type) {
+        if (type === "birthday") {
+          return {
+            emoji: "🎂",
+            title: "生日快乐呀",
+            text: "今天是你来到这个世界的日子。我准备了一点小惊喜，要看看吗？"
+          };
+        }
+        if (type === "period") {
+          return {
+            emoji: "🧸",
+            title: "这几天要照顾好自己哦",
+            text: "肚子疼就躺一会儿，别逞强。我给你留了几句贴心话，要看吗？"
+          };
+        }
+        return {
+          emoji: "💌",
+          title: "今天也想你啦",
+          text: randomPick(DAILY_LINES) + " 要收下今天的小惊喜吗？"
+        };
+      }
+
+      function openDailyPopup(force) {
+        var today = dateKey(new Date());
+        var shown = safeGet(CONFIG.storage.popupDate);
+
+        if (!force && shown === today) return;
+
+        dailyType = pickDailyType();
+        var copy = dailyCopy(dailyType);
+
+        el.modalEmoji.textContent = copy.emoji;
+        el.modalTitle.textContent = copy.title;
+        el.modalText.textContent = copy.text;
+        el.modal.classList.add("is-open");
+        el.modal.setAttribute("aria-hidden", "false");
+
+        safeSet(CONFIG.storage.popupDate, today);
+      }
+
+      function closeDailyPopup() {
+        el.modal.classList.remove("is-open");
+        el.modal.setAttribute("aria-hidden", "true");
+      }
+
+      el.modalYes.addEventListener("click", function () {
+        closeDailyPopup();
+        showScreen(pageForType(dailyType));
+      });
+
+      el.modalNo.addEventListener("click", function () {
+        closeDailyPopup();
+        showScreen("home");
+      });
+
+      el.modal.addEventListener("click", function (event) {
+        if (event.target === el.modal) closeDailyPopup();
+      });
+
+      /* ============================================================
+       * 首页按钮
+       * ============================================================ */
+      el.surpriseBtn.addEventListener("click", function () {
+        showScreen(pageForType(pickDailyType()));
+      });
+
+      el.birthdayModule.addEventListener("click", function () {
+        showScreen("birthdays");
+      });
+
+      function renderBirthdayModule() {
+        if (!el.birthdayCountdown) return;
+        var days = daysUntilBirthday();
+        el.birthdayCountdown.textContent = days === 0
+          ? "就是今天，生日快乐！"
+          : "距离下一次生日还有 " + days + " 天";
+      }
+
+      /* 生日年册：一格一年，第 1 格是已经做好的惊喜页 */
+      var BIRTHDAY_PAGES = 1;
+      var BIRTHDAY_CELLS = 6;
+
+      function renderBirthdayGrid() {
+        if (!el.birthdayGrid) return;
+
+        var startYear = CONFIG.startDate.year;
+        var firstYear = startYear;
+        var birthdayThisYear = new Date(
+          startYear,
+          CONFIG.birthday.month - 1,
+          CONFIG.birthday.day
+        );
+        var start = new Date(
+          CONFIG.startDate.year,
+          CONFIG.startDate.month - 1,
+          CONFIG.startDate.day
+        );
+
+        if (birthdayThisYear.getTime() < start.getTime()) {
+          firstYear = startYear + 1;
+        }
+
+        el.birthdayGrid.innerHTML = "";
+
+        for (var i = 0; i < BIRTHDAY_CELLS; i++) {
+          var year = firstYear + i;
+          var unlocked = i < BIRTHDAY_PAGES;
+          var cell = document.createElement("button");
+
+          cell.type = "button";
+          cell.className = "bd-cell " + (unlocked ? "is-active" : "is-locked");
+          cell.setAttribute("data-index", String(i));
+
+          var emoji = document.createElement("span");
+          emoji.className = "bd-cell-emoji";
+          emoji.textContent = unlocked ? "🎂" : "🔒";
+
+          var label = document.createElement("span");
+          label.className = "bd-cell-label";
+          label.innerHTML = "陪你过的<br>第 " + (i + 1) + " 个生日~";
+
+          var yearLabel = document.createElement("span");
+          yearLabel.className = "bd-cell-year";
+          yearLabel.textContent = year + "." + CONFIG.birthday.month + "." + CONFIG.birthday.day;
+
+          cell.appendChild(emoji);
+          cell.appendChild(label);
+          cell.appendChild(yearLabel);
+
+          cell.addEventListener("click", function (event) {
+            var index = Number(event.currentTarget.getAttribute("data-index"));
+
+            if (index < BIRTHDAY_PAGES) {
+              showScreen("birthday");
+            } else {
+              showToast("这一格还没到哦～");
+            }
+          });
+
+          el.birthdayGrid.appendChild(cell);
+        }
+      }
+
+      /* ============================================================
+       * 留言板折叠
+       * ============================================================ */
+      function setChatExpanded(expanded) {
+        el.chatCard.classList.toggle("is-collapsed", !expanded);
+        el.chatToggle.setAttribute("aria-label", expanded ? "收起留言" : "展开留言");
+
+        if (expanded) {
+          window.setTimeout(scrollChatToEnd, 60);
+        }
+      }
+
+      el.chatToggle.addEventListener("click", function (event) {
+        event.preventDefault();
+        setChatExpanded(el.chatCard.classList.contains("is-collapsed"));
+      });
+
+      /* ============================================================
+       * 随机小惊喜
+       * ============================================================ */
+      var TASKS = [
+        "给自己买一杯热饮，然后拍张照发给我。",
+        "今天早睡三十分钟，我检查。",
+        "对着镜子夸自己三句，要大声。",
+        "找一首喜欢的歌，单曲循环一整天。",
+        "吃一顿不看手机的饭。"
+      ];
+
+      var SWEET_WORDS = [
+        "你不需要变成谁，你现在的样子就很好。",
+        "我喜欢的不是完美的你，是全部的你。",
+        "不管今天过得怎么样，晚上都有我在。",
+        "你一笑，我就觉得这一天都值了。",
+        "别的都可以慢慢来，喜欢你这件事不行。"
+      ];
+
+      var surpriseType = null;
+
+      function daysUntilBirthday() {
+        var now = startOfDay(new Date());
+        var target = new Date(now.getFullYear(), CONFIG.birthday.month - 1, CONFIG.birthday.day);
+
+        if (target.getTime() < now.getTime()) {
+          target = new Date(now.getFullYear() + 1, CONFIG.birthday.month - 1, CONFIG.birthday.day);
+        }
+
+        return Math.round((target.getTime() - now.getTime()) / 86400000);
+      }
+
+      function renderSurprise(forcedType) {
+        var types = ["task", "words", "countdown"];
+        var type = forcedType;
+
+        if (!type) {
+          type = randomPick(types);
+          if (types.length > 1 && type === surpriseType) {
+            type = randomPick(types.filter(function (item) { return item !== surpriseType; }));
+          }
+        }
+
+        surpriseType = type;
+
+        if (type === "task") {
+          el.surpriseTag.textContent = "今日任务";
+          el.surpriseTitle.textContent = "给今天留一点小期待";
+          el.surpriseBody.innerHTML = '<p class="surprise-body">' + randomPick(TASKS) + "</p>";
+        } else if (type === "words") {
+          el.surpriseTag.textContent = "想对你说";
+          el.surpriseTitle.textContent = "有些话，攒了很久";
+          el.surpriseBody.innerHTML = '<p class="surprise-body">' + randomPick(SWEET_WORDS) + "</p>";
+        } else {
+          var days = daysUntilBirthday();
+          var daysTogether = getDays();
+          el.surpriseTag.textContent = "倒计时";
+          el.surpriseTitle.textContent = "离你的生日还有";
+          el.surpriseBody.innerHTML =
+            '<div class="countdown"><b>' + days + "<small>天</small></b></div>" +
+            '<p class="surprise-body">我们已经一起走过 ' + daysTogether + " 天啦。</p>";
+        }
+      }
+
+      el.rerollBtn.addEventListener("click", function () {
+        renderSurprise(null);
+      });
+
+      /* ============================================================
+       * 生理期页的小抱抱
+       * ============================================================ */
+      el.hugBtn.addEventListener("click", function () {
+        spawnFloatingEmoji("💗", el.hugBtn);
+        el.hugBtn.textContent = "抱住啦，痛痛飞走";
+        window.setTimeout(function () {
+          el.hugBtn.textContent = "再抱一个";
+        }, 2200);
+      });
+
+      function spawnFloatingEmoji(symbol, anchor) {
+        var rect = anchor.getBoundingClientRect();
+        var host = anchor.parentElement;
+
+        for (var i = 0; i < 8; i++) {
+          var heart = document.createElement("span");
+          heart.className = "fx-heart";
+          heart.textContent = symbol;
+          heart.style.left = (rect.left + rect.width / 2 - 10 + (Math.random() - 0.5) * 90) + "px";
+          heart.style.top = (rect.top - 6) + "px";
+          heart.style.position = "fixed";
+          heart.style.setProperty("--dx", ((Math.random() - 0.5) * 40) + "px");
+          heart.style.animationDelay = (i * 0.05) + "s";
+          document.body.appendChild(heart);
+          window.setTimeout(function (node) {
+            return function () {
+              node.remove();
+            };
+          }(heart), 1700);
+        }
+
+        void host;
+      }
+
+      /* ============================================================
+       * 留言板
+       * ============================================================ */
+      var KEYWORD_REPLIES = [
+        {
+          words: ["想你", "想你了", "miss"],
+          text: "我也想你呀，刚刚还在想你有没有想我。",
+          effect: "hearts"
+        },
+        {
+          words: ["爱你", "喜欢你", "love"],
+          text: "爱你，比昨天多一点点。",
+          effect: "hearts"
+        },
+        {
+          words: ["晚安", "睡了", "困"],
+          text: "晚安，梦里也要牵着手哦。",
+          effect: "stars"
+        },
+        {
+          words: ["抱抱", "抱", "亲亲"],
+          text: "抱紧你，不许跑。",
+          effect: "hearts"
+        },
+        {
+          words: ["开心", "高兴", "快乐"],
+          text: "你开心，我就开心。",
+          effect: "stars"
+        },
+        {
+          words: ["难过", "不开心", "累", "烦"],
+          text: "辛苦啦，靠一会儿我的肩膀。",
+          effect: "hearts"
+        }
+      ];
+
+      var messages = [];
+
+      function loadMessages() {
+        var raw = safeGet(CONFIG.storage.messages);
+        if (!raw) return [];
+
+        try {
+          var parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function saveMessages() {
+        try {
+          safeSet(CONFIG.storage.messages, JSON.stringify(messages.slice(-120)));
+        } catch (error) {
+          /* 忽略 */
+        }
+      }
+
+      function appendBubble(role, text) {
+        if (role === "system") {
+          var system = document.createElement("div");
+          system.className = "system";
+          system.textContent = text;
+          el.chatList.appendChild(system);
+          return;
+        }
+
+        var row = document.createElement("div");
+        row.className = "chat-row " + role;
+
+        if (role === "bot") {
+          var avatar = document.createElement("div");
+          avatar.className = "avatar";
+          avatar.textContent = "🐰";
+          row.appendChild(avatar);
+        }
+
+        var bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.textContent = text;
+        row.appendChild(bubble);
+
+        el.chatList.appendChild(row);
+      }
+
+      function renderChat() {
+        el.chatList.innerHTML = "";
+
+        messages.forEach(function (message) {
+          appendBubble(message.role, message.text);
+        });
+
+        scrollChatToEnd();
+      }
+
+      function scrollChatToEnd() {
+        el.chatList.scrollTop = el.chatList.scrollHeight;
+      }
+
+      function pushMessage(role, text, persist) {
+        messages.push({ role: role, text: text, ts: Date.now() });
+
+        if (messages.length > 120) {
+          messages = messages.slice(-120);
+        }
+
+        if (persist !== false) saveMessages();
+        appendBubble(role, text);
+        scrollChatToEnd();
+      }
+
+      function findReply(text) {
+        var lower = text.toLowerCase();
+
+        for (var i = 0; i < KEYWORD_REPLIES.length; i++) {
+          var rule = KEYWORD_REPLIES[i];
+          for (var j = 0; j < rule.words.length; j++) {
+            if (lower.indexOf(rule.words[j].toLowerCase()) !== -1) {
+              return rule;
+            }
+          }
+        }
+
+        return null;
+      }
+
+      function chatEffect(kind) {
+        var rect = el.chatList.getBoundingClientRect();
+        var symbols = kind === "stars" ? ["✦", "✧", "⭐"] : ["💗", "💕", "♡"];
+
+        for (var i = 0; i < 10; i++) {
+          var node = document.createElement("span");
+          node.className = "fx-heart";
+          node.textContent = randomPick(symbols);
+          node.style.left = (rect.left + rect.width * (0.2 + Math.random() * 0.6)) + "px";
+          node.style.top = (rect.top + rect.height * 0.45) + "px";
+          node.style.position = "fixed";
+          node.style.fontSize = (14 + Math.random() * 10) + "px";
+          node.style.setProperty("--dx", ((Math.random() - 0.5) * 60) + "px");
+          node.style.animationDelay = (i * 0.04) + "s";
+          document.body.appendChild(node);
+
+          window.setTimeout(function (target) {
+            return function () {
+              target.remove();
+            };
+          }(node), 1600);
+        }
+      }
+
+      function sendMessage(text) {
+        var value = text.trim();
+        if (!value) return;
+
+        setChatExpanded(true);
+        pushMessage("user", value);
+        el.chatInput.value = "";
+        el.chatInput.focus();
+
+        var reply = findReply(value);
+
+        window.setTimeout(function () {
+          if (reply) {
+            pushMessage("bot", reply.text);
+            chatEffect(reply.effect);
+          } else {
+            pushMessage("system", "系统提示：该内容已被外星人拦截");
+          }
+        }, 420);
+      }
+
+      el.chatForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        sendMessage(el.chatInput.value);
+      });
+
+      el.chatInput.addEventListener("focus", function () {
+        document.body.classList.add("chat-focus");
+        setChatExpanded(true);
+        window.setTimeout(scrollChatToEnd, 260);
+      });
+
+      el.chatInput.addEventListener("blur", function () {
+        document.body.classList.remove("chat-focus");
+      });
+
+      function initMessages() {
+        messages = loadMessages();
+
+        if (!messages.length) {
+          messages.push({
+            role: "bot",
+            text: "欢迎来到留言板，今天想对我说什么呀？",
+            ts: Date.now()
+          });
+          saveMessages();
+        }
+      }
+
+      /* ============================================================
+       * 音乐：首次触摸后启动，WebAudio 现场合成，无外部音频
+       * ============================================================ */
+      var music = {
+        ctx: null,
+        master: null,
+        timer: 0,
+        step: 0,
+        nextTime: 0,
+        muted: safeGet(CONFIG.storage.musicMuted) === "1"
+      };
+
+      var MELODY = [523.25, 659.25, 783.99, 1046.5, 880.0, 783.99, 659.25, 587.33];
+
+      function ensureAudio() {
+        if (!music.ctx) {
+          var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return false;
+
+          music.ctx = new AudioContextClass();
+          music.master = music.ctx.createGain();
+          music.master.gain.value = 0.055;
+          music.master.connect(music.ctx.destination);
+        }
+
+        if (music.ctx.state === "suspended") {
+          music.ctx.resume();
+        }
+
+        return true;
+      }
+
+      function playNote(frequency, time, duration) {
+        var ctx = music.ctx;
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+
+        osc.type = "triangle";
+        osc.frequency.value = frequency;
+        gain.gain.setValueAtTime(0.0001, time);
+        gain.gain.exponentialRampToValueAtTime(0.9, time + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+
+        osc.connect(gain);
+        gain.connect(music.master);
+        osc.start(time);
+        osc.stop(time + duration + 0.05);
+      }
+
+      function scheduleMusic() {
+        if (!music.ctx || music.muted) return;
+
+        var now = music.ctx.currentTime;
+
+        while (music.nextTime < now + 0.25) {
+          var note = MELODY[music.step % MELODY.length];
+          playNote(note, music.nextTime, 0.62);
+
+          if (music.step % 4 === 0) {
+            playNote(note / 2, music.nextTime, 0.9);
+          }
+
+          music.nextTime += 0.52;
+          music.step += 1;
+        }
+      }
+
+      function startMusic() {
+        if (music.muted || !ensureAudio()) return;
+
+        if (!music.timer) {
+          music.nextTime = music.ctx.currentTime + 0.08;
+          music.timer = window.setInterval(scheduleMusic, 120);
+          scheduleMusic();
+        }
+
+        updateMusicButton();
+      }
+
+      function stopMusic() {
+        if (music.timer) {
+          window.clearInterval(music.timer);
+          music.timer = 0;
+        }
+        updateMusicButton();
+      }
+
+      function updateMusicButton() {
+        var on = !music.muted && !!music.timer;
+        el.musicIcon.textContent = on ? "♪" : "♪";
+        el.musicBtn.classList.toggle("is-off", !on);
+        el.musicBtn.setAttribute("aria-label", on ? "关闭音乐" : "开启音乐");
+      }
+
+      el.musicBtn.addEventListener("click", function (event) {
+        event.stopPropagation();
+        music.muted = !music.muted;
+        safeSet(CONFIG.storage.musicMuted, music.muted ? "1" : "0");
+
+        if (music.muted) {
+          stopMusic();
+          showToast("音乐已关闭");
+        } else {
+          startMusic();
+          showToast("音乐已开启");
+        }
+      });
+
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          if (music.ctx && music.ctx.state === "running") {
+            music.ctx.suspend();
+          }
+        } else if (!music.muted && music.timer && music.ctx) {
+          music.ctx.resume();
+        }
+      });
+
+      var firstTouchDone = false;
+
+      function onFirstTouch() {
+        if (firstTouchDone) return;
+        firstTouchDone = true;
+        startMusic();
+      }
+
+      document.addEventListener("pointerdown", onFirstTouch, { once: true });
+      document.addEventListener("touchstart", onFirstTouch, { once: true, passive: true });
+
+      /* ============================================================
+       * 启动
+       * ============================================================ */
+      function init() {
+        buildBackgroundHearts();
+        initMessages();
+        renderChat();
+        renderDays(true);
+        scheduleMidnightRefresh();
+        renderSurprise(null);
+        renderBirthdayModule();
+        renderBirthdayGrid();
+        updateMusicButton();
+
+        var hash = window.location.hash.replace("#", "");
+
+        if (SCREEN_IDS.indexOf(hash) !== -1) {
+          showScreen(hash, false);
+          return;
+        }
+
+        showScreen("home", false);
+
+        window.setTimeout(function () {
+          openDailyPopup(false);
+        }, 650);
+      }
+
+      init();
+
+      /* 供调试：在控制台可调用 window.herSite.resetPopup() 重置今天的弹窗 */
+      window.herSite = {
+        resetPopup: function () {
+          safeSet(CONFIG.storage.popupDate, "");
+          showToast("今日弹窗已重置");
+        },
+        openPopup: function () {
+          openDailyPopup(true);
+        }
+      };
+    })();
+  </script>
+
+  <!--
+    ================= 国内托管（简述） =================
+    推荐：腾讯云 EdgeOne Pages（免费额度、国内 CDN、自带二级域名，微信可正常打开）
+      1. 注册/登录腾讯云并完成实名认证，开通 EdgeOne Pages。
+      2. 新建项目 → 选择「直接上传」静态文件，把 index.html 和 birthday.html 一起上传。
+      3. 部署完成后会得到一个 xxx.edgeone.app 的访问地址，可以直接发微信。
+      4. 想用自定义域名：在 EdgeOne 绑定域名并按提示完成备案/解析。
+    备选：腾讯云 CloudBase 静态网站托管（默认域名 xxx.tcloudbaseapp.com）、
+          Gitee Pages（需实名，服务政策可能调整）、阿里云 OSS / 腾讯云 COS 静态托管
+          （自定义域名需备案，默认域名可能强制下载）。
+    微信分享：把头部 og:image 换成你的实际域名 + /cover.jpg，
+      并上传一张 300×300 以上的 cover.jpg；微信有缓存，换图后可换文件名或用 JS-SDK。
+    改内容：脚本顶部的 CONFIG（日期/生日/称呼）。
+    说明：生日站已内嵌在 #birthdayDoc，只传 index.html 即可；birthday.html 仅作源码备份。
+  -->
+</body>
+</html>
