@@ -663,6 +663,11 @@
       border-color: rgba(150, 190, 220, 0.48);
     }
 
+    .tile-memory {
+      background: linear-gradient(160deg, #fff 0%, #f5eedf 100%);
+      border-color: rgba(200, 180, 140, 0.45);
+    }
+
     .tile-lazy {
       color: rgba(110, 125, 135, 0.72);
       background: rgba(255, 255, 255, 0.5);
@@ -944,8 +949,9 @@
       letter-spacing: 0.1em;
     }
 
-    /* ---------------- 生日年册 ---------------- */
-    .birthdays {
+    /* ---------------- 生日年册 / 回忆 ---------------- */
+    .birthdays,
+    .memories {
       padding: 0;
       background:
         radial-gradient(120% 70% at 50% 0%, #fdfaf3 0%, #eff4f4 46%, #d6e8f3 100%);
@@ -986,6 +992,18 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       padding: 18px 16px 8px;
+    }
+
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 18px 16px 8px;
+    }
+
+    .memory-cell.is-locked {
+      background: rgba(255, 250, 240, 0.55);
+      border-color: rgba(200, 180, 140, 0.35);
     }
 
     .bd-cell {
@@ -1595,10 +1613,10 @@
             <strong>戳戳~</strong>
             <small id="pokeHint">点我一下</small>
           </button>
-          <button class="module-tile tile-lazy" type="button">
-            <span class="tile-emoji" aria-hidden="true">🛠️</span>
-            <strong>你的男朋友有点懒...</strong>
-            <small>待更新</small>
+          <button class="module-tile tile-memory" id="memoryModule" type="button">
+            <span class="tile-emoji" aria-hidden="true">📔</span>
+            <strong>回忆</strong>
+            <small>这些我都会帮你记住</small>
           </button>
           <button class="module-tile tile-lazy" type="button">
             <span class="tile-emoji" aria-hidden="true">😴</span>
@@ -1643,6 +1661,16 @@
       </header>
       <div class="birthday-grid" id="birthdayGrid"></div>
       <p class="grid-note">每一格都是一年，点开就是那一年的惊喜。</p>
+    </section>
+
+    <!-- ========== 回忆 ========== -->
+    <section class="screen memories" id="screen-memories" data-screen="memories">
+      <header class="sub-head">
+        <button class="icon-btn" type="button" data-back aria-label="返回">‹</button>
+        <div class="sub-title">这些我都会帮你记住哦~<span>一年一格，等我们一起填满</span></div>
+      </header>
+      <div class="memory-grid" id="memoryGrid"></div>
+      <p class="grid-note">目前还没有解锁，等我们一起经历。</p>
     </section>
 
     <!-- ========== 生理期关怀页 ========== -->
@@ -2475,6 +2503,7 @@
       let tapStartY = 0;
       let tapStartTime = 0;
       let tapMoved = false;
+      let hintSwitched = false;
       let lastTapAt = 0;
       let cloudInertiaY = 0;
       let cloudInertiaPitch = 0;
@@ -3245,25 +3274,25 @@
           {
             text: "李妍琪",
             size: sizes[0],
-            fill: "#fff4fa",
+            fill: "#ffd3e4",
             stroke: "#ff4d8e",
-            blur: 22,
+            blur: 18,
             weight: 800
           },
           {
             text: "生日快乐！",
             size: sizes[1],
-            fill: "#fff0f7",
+            fill: "#ffc9dd",
             stroke: "#ff5c9a",
-            blur: 18,
+            blur: 15,
             weight: 800
           },
           {
             text: "现在你和我一样大了哦",
             size: sizes[2],
-            fill: "#ffd9e8",
+            fill: "#ffb6cf",
             stroke: "#ff77ad",
-            blur: 12,
+            blur: 10,
             weight: 700
           }
         ];
@@ -4514,6 +4543,8 @@
         cloudZoom = CLOUD_ZOOM_TARGET;
         darkLayer.style.opacity = "1";
         scene.classList.add("word-cloud-active");
+        hintSwitched = false;
+        dragHint.textContent = "可以试试拖动屏幕哦~";
         dragHint.classList.remove("hidden");
       }
 
@@ -4534,7 +4565,6 @@
         tapStartY = touch.clientY;
         tapStartTime = lastTouchTime;
         tapMoved = false;
-        dragHint.classList.add("hidden");
       }
 
       function handleTouchMove(event) {
@@ -4554,6 +4584,10 @@
           || Math.abs(touch.clientY - tapStartY) > 10
         ) {
           tapMoved = true;
+          if (!hintSwitched) {
+            hintSwitched = true;
+            dragHint.textContent = "每条祝福语都是可以点的哦";
+          }
         }
 
         cloudManualRotation += rotationDelta;
@@ -5068,7 +5102,7 @@
         }
       };
 
-      var SCREEN_IDS = ["home", "birthdays", "birthday", "period", "surprise"];
+      var SCREEN_IDS = ["home", "birthdays", "birthday", "memories", "period", "surprise"];
 
       var el = {
         app: document.getElementById("app"),
@@ -5087,6 +5121,8 @@
         chatInput: document.getElementById("chatInput"),
         chatToggle: document.getElementById("chatToggle"),
         birthdayGrid: document.getElementById("birthdayGrid"),
+        memoryGrid: document.getElementById("memoryGrid"),
+        memoryModule: document.getElementById("memoryModule"),
         surpriseBtn: document.getElementById("surpriseBtn"),
         surpriseTag: document.getElementById("surpriseTag"),
         surpriseTitle: document.getElementById("surpriseTitle"),
@@ -5287,6 +5323,9 @@
         if (name === "birthdays") {
           renderBirthdayGrid();
         }
+        if (name === "memories") {
+          renderMemoryGrid();
+        }
         if (name === "birthday") {
           if (siteAudio && !siteAudio.paused) siteAudio.pause();
           openBirthdayFrame();
@@ -5415,6 +5454,12 @@
         showScreen("birthdays");
       });
 
+      if (el.memoryModule) {
+        el.memoryModule.addEventListener("click", function () {
+          showScreen("memories");
+        });
+      }
+
       function renderBirthdayModule() {
         if (!el.birthdayCountdown) return;
         var days = daysUntilBirthday();
@@ -5511,6 +5556,44 @@
           });
 
           el.birthdayGrid.appendChild(cell);
+        }
+      }
+
+      /* 回忆：一年一格，暂时全部锁定 */
+      var MEMORY_YEARS = 6;
+
+      function renderMemoryGrid() {
+        if (!el.memoryGrid) return;
+
+        var startYear = CONFIG.startDate.year;
+        el.memoryGrid.innerHTML = "";
+
+        for (var i = 0; i < MEMORY_YEARS; i++) {
+          var cell = document.createElement("button");
+          cell.type = "button";
+          cell.className = "bd-cell memory-cell is-locked";
+
+          var emoji = document.createElement("span");
+          emoji.className = "bd-cell-emoji";
+          emoji.textContent = "🔒";
+
+          var label = document.createElement("span");
+          label.className = "bd-cell-label";
+          label.textContent = "第 " + (i + 1) + " 年";
+
+          var year = document.createElement("span");
+          year.className = "bd-cell-year";
+          year.textContent = String(startYear + i);
+
+          cell.appendChild(emoji);
+          cell.appendChild(label);
+          cell.appendChild(year);
+
+          cell.addEventListener("click", function () {
+            showToast("这段回忆还没解锁哦~");
+          });
+
+          el.memoryGrid.appendChild(cell);
         }
       }
 
@@ -5945,6 +6028,7 @@
         renderSurprise(null);
         renderBirthdayModule();
         renderBirthdayGrid();
+        renderMemoryGrid();
         updateTrackState();
 
         var hash = window.location.hash.replace("#", "");

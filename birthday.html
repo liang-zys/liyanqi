@@ -754,6 +754,7 @@
       let tapStartY = 0;
       let tapStartTime = 0;
       let tapMoved = false;
+      let hintSwitched = false;
       let lastTapAt = 0;
       let cloudInertiaY = 0;
       let cloudInertiaPitch = 0;
@@ -1524,25 +1525,25 @@
           {
             text: "李妍琪",
             size: sizes[0],
-            fill: "#fff4fa",
+            fill: "#ffd3e4",
             stroke: "#ff4d8e",
-            blur: 22,
+            blur: 18,
             weight: 800
           },
           {
             text: "生日快乐！",
             size: sizes[1],
-            fill: "#fff0f7",
+            fill: "#ffc9dd",
             stroke: "#ff5c9a",
-            blur: 18,
+            blur: 15,
             weight: 800
           },
           {
             text: "现在你和我一样大了哦",
             size: sizes[2],
-            fill: "#ffd9e8",
+            fill: "#ffb6cf",
             stroke: "#ff77ad",
-            blur: 12,
+            blur: 10,
             weight: 700
           }
         ];
@@ -2793,6 +2794,8 @@
         cloudZoom = CLOUD_ZOOM_TARGET;
         darkLayer.style.opacity = "1";
         scene.classList.add("word-cloud-active");
+        hintSwitched = false;
+        dragHint.textContent = "可以试试拖动屏幕哦~";
         dragHint.classList.remove("hidden");
       }
 
@@ -2813,7 +2816,6 @@
         tapStartY = touch.clientY;
         tapStartTime = lastTouchTime;
         tapMoved = false;
-        dragHint.classList.add("hidden");
       }
 
       function handleTouchMove(event) {
@@ -2833,6 +2835,10 @@
           || Math.abs(touch.clientY - tapStartY) > 10
         ) {
           tapMoved = true;
+          if (!hintSwitched) {
+            hintSwitched = true;
+            dragHint.textContent = "每条祝福语都是可以点的哦";
+          }
         }
 
         cloudManualRotation += rotationDelta;
