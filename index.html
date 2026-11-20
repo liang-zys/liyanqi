@@ -4,14 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
   <meta name="format-detection" content="telephone=no">
-  <meta name="theme-color" content="#ffc4e1">
-  <meta name="description" content="有一些话，只想说给你听。">
+  <meta name="theme-color" content="#e7eef2">
+  <meta name="description" content="只属于 lyq 一个人的小网站，有一些话想慢慢说给你听。">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="小网站">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-  <!-- 微信分享卡片：og:image 必须换成 GitHub Pages 上的绝对地址（见文件末尾部署说明） -->
+  <!-- 微信分享卡片：og:image 为绝对地址，换图后建议换文件名绕开微信缓存 -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="属于她的小网站">
-  <meta property="og:description" content="有一些话，只想说给你听。">
-  <meta property="og:image" content="https://liang-zys.github.io/liyanqi/cover.png">
+  <meta property="og:description" content="只属于 lyq 一个人的小网站，有一些话想慢慢说给你听。">
+  <meta property="og:image" content="https://liang-zys.github.io/liyanqi/cover-v2.png">
 
   <title>属于她的小网站</title>
 
@@ -1737,7 +1740,7 @@
       </div>
     </div>
 
-    <audio id="siteAudio" src="music/love-song.mp3" preload="metadata" loop></audio>
+    <audio id="siteAudio" src="music/love-song.mp3" preload="metadata" loop playsinline webkit-playsinline></audio>
 
     <button class="music-btn" id="musicBtn" type="button" aria-label="音乐">
       <span id="musicIcon" aria-hidden="true">♪</span>
@@ -2289,7 +2292,7 @@
     文件：music/love-song.mp3，从副歌前 10 秒开始截取约 40 秒，
     点击“了解一下吗”后第 10 秒正好进入高潮；开头做了音量渐入。
   -->
-  <audio id="bgm" loop preload="metadata">
+  <audio id="bgm" loop preload="metadata" playsinline webkit-playsinline>
     <source
       src="music/love-song.mp3"
       type="audio/mpeg"
@@ -6013,6 +6016,13 @@
       siteAudio.addEventListener("error", function () {
         if (musicSheet.classList.contains("is-open")) {
           showToast("音频文件缺失或格式不支持，先用网易云听吧~");
+        }
+      });
+
+      /* 切到后台时暂停，省电也避免微信里后台串音 */
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden && siteAudio && !siteAudio.paused) {
+          siteAudio.pause();
         }
       });
 
