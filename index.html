@@ -1731,7 +1731,7 @@
           <span class="track-cover" aria-hidden="true">🎧</span>
           <span class="track-info">
             <strong>Love Song</strong>
-            <small>方大同</small>
+            <small>方大同 · 完整版</small>
           </span>
           <span class="track-action" id="trackAction">播放</span>
         </button>
@@ -1740,7 +1740,7 @@
       </div>
     </div>
 
-    <audio id="siteAudio" src="music/love-song.mp3" preload="metadata" loop playsinline webkit-playsinline></audio>
+    <audio id="siteAudio" src="music/love-song-full.mp3" preload="metadata" loop playsinline webkit-playsinline></audio>
 
     <button class="music-btn" id="musicBtn" type="button" aria-label="音乐">
       <span id="musicIcon" aria-hidden="true">♪</span>
@@ -5290,6 +5290,33 @@
         return "surprise";
       }
 
+      function stopBirthdayBgm() {
+        var frame = el.birthdayFrame;
+        if (!frame) return;
+
+        var stopped = false;
+
+        try {
+          var doc = frame.contentDocument
+            || (frame.contentWindow && frame.contentWindow.document);
+          var bgm = doc && doc.getElementById("bgm");
+
+          if (bgm) {
+            bgm.pause();
+            bgm.currentTime = 0;
+            stopped = true;
+          }
+        } catch (error) {
+          stopped = false;
+        }
+
+        /* 跨域 / 取不到文档时，直接清空 iframe，确保声音停掉 */
+        if (!stopped) {
+          frame.removeAttribute("srcdoc");
+          frame.removeAttribute("data-loaded");
+        }
+      }
+
       function openBirthdayFrame() {
         var frame = el.birthdayFrame;
         if (!frame || frame.getAttribute("data-loaded") === "1") return;
@@ -5308,8 +5335,13 @@
       function showScreen(name, updateHash) {
         if (SCREEN_IDS.indexOf(name) === -1) name = "home";
 
+        var previousScreen = currentScreen;
         currentScreen = name;
         document.body.setAttribute("data-screen", name);
+
+        if (previousScreen === "birthday" && name !== "birthday") {
+          stopBirthdayBgm();
+        }
 
         var screens = document.querySelectorAll(".screen");
         for (var i = 0; i < screens.length; i++) {
