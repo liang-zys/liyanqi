@@ -51,7 +51,7 @@
     body {
       color: var(--ink);
       background:
-        radial-gradient(120% 80% at 50% 0%, #fff9fc 0%, #ffeaf4 40%, #ffc4e1 100%);
+        radial-gradient(120% 80% at 50% 0%, #fdf9f0 0%, #f3f4ee 38%, #dcebf4 72%, #c9dfee 100%);
       font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
         "STKaiti", "KaiTi", "Noto Sans CJK SC", sans-serif;
       -webkit-font-smoothing: antialiased;
@@ -81,7 +81,7 @@
 
     @media (min-width: 560px) {
       body {
-        background: #ffd6e9;
+        background: #e6eef2;
       }
 
       .app {
@@ -107,7 +107,7 @@
       font-size: 14px;
       animation: floatUp linear infinite;
       opacity: 0;
-      text-shadow: 0 2px 6px rgba(233, 79, 156, 0.18);
+      text-shadow: 0 2px 6px rgba(120, 150, 170, 0.2);
     }
 
     @keyframes floatUp {
@@ -498,7 +498,7 @@
       flex: 0 0 auto;
       margin: 2px 0 0;
       padding: 0 6px;
-      color: rgba(148, 100, 124, 0.72);
+      color: rgba(110, 125, 135, 0.78);
       font-size: 10.5px;
       line-height: 1.8;
       letter-spacing: 0.02em;
@@ -603,6 +603,77 @@
       color: rgba(148, 100, 124, 0.6);
       font-size: 12px;
       letter-spacing: 0.12em;
+    }
+
+    /* 3×2 模块格 */
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+    }
+
+    .module-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      aspect-ratio: 1;
+      padding: 7px 5px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: var(--shadow-soft);
+      color: var(--ink);
+      text-align: center;
+      transition:
+        transform 0.16s ease,
+        box-shadow 0.16s ease;
+    }
+
+    .module-tile:active {
+      transform: scale(0.95);
+    }
+
+    .tile-emoji {
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .module-tile strong {
+      font-size: 10.6px;
+      font-weight: 600;
+      line-height: 1.35;
+      letter-spacing: 0.01em;
+    }
+
+    .module-tile small {
+      color: var(--ink-soft);
+      font-size: 8.6px;
+      line-height: 1.3;
+    }
+
+    .tile-birthday {
+      background: linear-gradient(160deg, #fff 0%, #ffeef6 100%);
+      border-color: rgba(255, 158, 203, 0.42);
+    }
+
+    .tile-poke {
+      background: linear-gradient(160deg, #fff 0%, #e9f3fa 100%);
+      border-color: rgba(150, 190, 220, 0.48);
+    }
+
+    .tile-lazy {
+      color: rgba(110, 125, 135, 0.72);
+      background: rgba(255, 255, 255, 0.5);
+      border-style: dashed;
+      border-color: rgba(150, 180, 200, 0.38);
+      box-shadow: none;
+    }
+
+    .tile-lazy strong {
+      font-size: 9.8px;
+      font-weight: 500;
     }
 
     /* ---------------- 生日烟花页 ---------------- */
@@ -726,7 +797,7 @@
       justify-content: center;
       align-items: center;
       background:
-        radial-gradient(100% 70% at 50% 0%, #fff8fc 0%, #ffe3ef 45%, #ffc4e1 100%);
+        radial-gradient(100% 70% at 50% 0%, #fdfaf3 0%, #eef4f6 45%, #d6e8f3 100%);
     }
 
     .panel {
@@ -877,7 +948,7 @@
     .birthdays {
       padding: 0;
       background:
-        radial-gradient(120% 70% at 50% 0%, #fff9fc 0%, #ffeaf4 50%, #ffd6e9 100%);
+        radial-gradient(120% 70% at 50% 0%, #fdfaf3 0%, #eff4f4 46%, #d6e8f3 100%);
     }
 
     .sub-head {
@@ -985,7 +1056,7 @@
     .chat {
       padding: 0;
       background:
-        radial-gradient(120% 70% at 50% 0%, #fff9fc 0%, #ffeaf4 50%, #ffd6e9 100%);
+        radial-gradient(120% 70% at 50% 0%, #fdfaf3 0%, #eff4f4 46%, #d6e8f3 100%);
     }
 
     .chat-head {
@@ -1249,7 +1320,130 @@
       letter-spacing: 0.08em;
     }
 
-    /* ---------------- 音乐按钮 / toast ---------------- */
+    /* ---------------- 音乐按钮 / 选歌面板 ---------------- */
+    .music-sheet {
+      position: fixed;
+      inset: 0;
+      z-index: 45;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(30, 45, 60, 0.34);
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        opacity 0.28s ease,
+        visibility 0s linear 0.28s;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .music-sheet.is-open {
+      opacity: 1;
+      visibility: visible;
+      transition:
+        opacity 0.28s ease,
+        visibility 0s linear 0s;
+    }
+
+    .music-panel {
+      width: min(100%, 480px);
+      padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
+      border-radius: 24px 24px 0 0;
+      background: linear-gradient(180deg, #fffdf9 0%, #f7f4ec 100%);
+      box-shadow: 0 -20px 60px rgba(30, 45, 60, 0.25);
+      transform: translateY(24px);
+      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+    }
+
+    .music-sheet.is-open .music-panel {
+      transform: none;
+    }
+
+    .music-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+
+    .music-close {
+      width: 44px;
+      height: 44px;
+      margin-right: -8px;
+      border-radius: 50%;
+      color: var(--ink-soft);
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .music-track {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 64px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: var(--shadow-soft);
+      text-align: left;
+    }
+
+    .track-cover {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(160deg, #ffe3ef, #ffc4e1);
+      font-size: 22px;
+    }
+
+    .track-info {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .track-info strong {
+      font-size: 14px;
+    }
+
+    .track-info small {
+      color: var(--ink-soft);
+      font-size: 11px;
+    }
+
+    .track-action {
+      min-width: 52px;
+      color: var(--pink-600);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .music-hint {
+      margin: 10px 4px 0;
+      color: #c07a92;
+      font-size: 10.5px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .music-note {
+      margin: 14px 4px 0;
+      color: rgba(110, 125, 135, 0.75);
+      font-size: 10.5px;
+      line-height: 1.7;
+      letter-spacing: 0.02em;
+      text-align: center;
+    }
+
     .music-btn {
       position: absolute;
       top: max(14px, env(safe-area-inset-top));
@@ -1390,16 +1584,38 @@
           <button class="future-link" id="surpriseBtn" type="button">今日小惊喜 →</button>
         </div>
 
-        <button class="module-card" id="birthdayModule" type="button">
-          <span class="module-index">01</span>
-          <span class="module-body">
+        <div class="module-grid">
+          <button class="module-tile tile-birthday" id="birthdayModule" type="button">
+            <span class="tile-emoji" aria-hidden="true">🎂</span>
             <strong>生日纪念</strong>
-            <small id="birthdayCountdown">距离下一次生日还有 -- 天</small>
-          </span>
-          <span class="module-arrow" aria-hidden="true">›</span>
-        </button>
-
-        <div class="module-ghost">更多模块 · 正在准备中</div>
+            <small id="birthdayCountdown">还有 -- 天</small>
+          </button>
+          <button class="module-tile tile-poke" id="pokeModule" type="button">
+            <span class="tile-emoji" aria-hidden="true">👉</span>
+            <strong>戳戳~</strong>
+            <small id="pokeHint">点我一下</small>
+          </button>
+          <button class="module-tile tile-lazy" type="button">
+            <span class="tile-emoji" aria-hidden="true">🛠️</span>
+            <strong>你的男朋友有点懒...</strong>
+            <small>待更新</small>
+          </button>
+          <button class="module-tile tile-lazy" type="button">
+            <span class="tile-emoji" aria-hidden="true">😴</span>
+            <strong>你的男朋友有点懒...</strong>
+            <small>待更新</small>
+          </button>
+          <button class="module-tile tile-lazy" type="button">
+            <span class="tile-emoji" aria-hidden="true">🧩</span>
+            <strong>你的男朋友有点懒...</strong>
+            <small>待更新</small>
+          </button>
+          <button class="module-tile tile-lazy" type="button">
+            <span class="tile-emoji" aria-hidden="true">⏳</span>
+            <strong>你的男朋友有点懒...</strong>
+            <small>待更新</small>
+          </button>
+        </div>
       </section>
 
       <p class="home-footer">
@@ -1473,7 +1689,29 @@
       </div>
     </div>
 
-    <button class="music-btn" id="musicBtn" type="button" aria-label="音乐开关">
+    <!-- ========== 选歌面板 ========== -->
+    <div class="music-sheet" id="musicSheet" aria-hidden="true">
+      <div class="music-panel" role="dialog" aria-modal="true" aria-label="选择音乐">
+        <div class="music-head">
+          <span>选一首歌</span>
+          <button class="music-close" id="musicClose" type="button" aria-label="关闭">×</button>
+        </div>
+        <button class="music-track" id="musicTrack" type="button">
+          <span class="track-cover" aria-hidden="true">🎧</span>
+          <span class="track-info">
+            <strong>Love Song</strong>
+            <small>方大同</small>
+          </span>
+          <span class="track-action" id="trackAction">播放</span>
+        </button>
+        <p class="music-hint" id="musicHint" hidden>音频文件还没放进来，先用网易云听吧~</p>
+        <p class="music-note">宝宝我没版权~有喜欢的歌可以自己后台放网易云哦</p>
+      </div>
+    </div>
+
+    <audio id="siteAudio" src="music/love-song.mp3" preload="metadata" loop></audio>
+
+    <button class="music-btn" id="musicBtn" type="button" aria-label="音乐">
       <span id="musicIcon" aria-hidden="true">♪</span>
     </button>
 
@@ -2019,14 +2257,13 @@
   </div>
 
   <!--
-    免费 BGM：Heartwarming — Kevin MacLeod（Incompetech），CC BY 4.0。
-    可靠音源建议：从 https://incompetech.com 搜索 Heartwarming 下载 MP3，
-    或从 Pixabay Music 筛选 Piano 并核对单曲许可证。正式发布时建议将音频
-    下载到本站 ./audio/Heartwarming.mp3，并保留下方署名，避免跨域和网络波动。
+    生日 BGM：方大同《Love Song》本地裁剪版（仅个人使用，不商用）。
+    文件：music/love-song.mp3，从副歌前 10 秒开始截取约 40 秒，
+    点击“了解一下吗”后第 10 秒正好进入高潮；开头做了音量渐入。
   -->
   <audio id="bgm" loop preload="metadata">
     <source
-      src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Heartwarming.mp3"
+      src="music/love-song.mp3"
       type="audio/mpeg"
     >
   </audio>
@@ -4369,14 +4606,37 @@
         musicButton.setAttribute("aria-label", bgm.muted ? "恢复音乐" : "静音");
       }
 
+      let bgmFadeId = 0;
+
+      function fadeBgm(target, duration) {
+        window.cancelAnimationFrame(bgmFadeId);
+        const startedAt = performance.now();
+        const from = bgm.volume;
+
+        const step = (now) => {
+          const progress = Math.min(1, (now - startedAt) / duration);
+          bgm.volume = from + (target - from) * progress;
+          if (progress < 1) {
+            bgmFadeId = window.requestAnimationFrame(step);
+          }
+        };
+
+        bgmFadeId = window.requestAnimationFrame(step);
+      }
+
       function attemptBgmPlay() {
-        bgm.volume = 0.4;
         if (bgm.muted) return;
 
+        /* 音频从副歌前 10 秒开始，点击后第 10 秒正好进入高潮 */
+        bgm.currentTime = 0;
+        bgm.volume = 0.05;
+
         const playPromise = bgm.play();
-        if (playPromise && playPromise.catch) {
-          playPromise.catch(() => {
-            showToast("点击音乐按钮可开启音乐");
+        if (playPromise && playPromise.then) {
+          playPromise.then(() => {
+            fadeBgm(0.55, 2600);
+          }).catch(() => {
+            showToast("音乐文件缺失，先把 love-song.mp3 放进 music 文件夹吧");
           });
         }
       }
@@ -4778,7 +5038,6 @@
       });
 
       window.addEventListener("resize", resizeCanvas, { passive: true });
-      bgm.volume = 0.4;
       updateMusicButton();
       updatePauseButton();
       resizeCanvas();
@@ -5029,6 +5288,7 @@
           renderBirthdayGrid();
         }
         if (name === "birthday") {
+          if (siteAudio && !siteAudio.paused) siteAudio.pause();
           openBirthdayFrame();
         }
 
@@ -5159,8 +5419,34 @@
         if (!el.birthdayCountdown) return;
         var days = daysUntilBirthday();
         el.birthdayCountdown.textContent = days === 0
-          ? "就是今天，生日快乐！"
-          : "距离下一次生日还有 " + days + " 天";
+          ? "就是今天！"
+          : "还有 " + days + " 天";
+      }
+
+      /* 戳戳与占位模块 */
+      var pokeIndex = 0;
+      var POKE_LINES = [
+        "戳到我了！",
+        "再戳就抱你啦",
+        "好啦，我在呢",
+        "戳戳戳，手不累吗？"
+      ];
+      var pokeModule = document.getElementById("pokeModule");
+      var pokeHint = document.getElementById("pokeHint");
+
+      if (pokeModule) {
+        pokeModule.addEventListener("click", function () {
+          spawnFloatingEmoji("💗", pokeModule);
+          pokeHint.textContent = POKE_LINES[pokeIndex % POKE_LINES.length];
+          pokeIndex += 1;
+        });
+      }
+
+      var lazyTiles = document.querySelectorAll(".tile-lazy");
+      for (var lazyIndex = 0; lazyIndex < lazyTiles.length; lazyIndex++) {
+        lazyTiles[lazyIndex].addEventListener("click", function () {
+          showToast("这个模块还在路上~");
+        });
       }
 
       /* 生日年册：一格一年，第 1 格是已经做好的惊喜页 */
@@ -5548,133 +5834,104 @@
       }
 
       /* ============================================================
-       * 音乐：首次触摸后启动，WebAudio 现场合成，无外部音频
+       * 音乐：静音进入，点右上角打开选歌面板
        * ============================================================ */
-      var music = {
-        ctx: null,
-        master: null,
-        timer: 0,
-        step: 0,
-        nextTime: 0,
-        muted: safeGet(CONFIG.storage.musicMuted) === "1"
-      };
+      var siteAudio = document.getElementById("siteAudio");
+      var musicSheet = document.getElementById("musicSheet");
+      var musicClose = document.getElementById("musicClose");
+      var musicTrack = document.getElementById("musicTrack");
+      var trackAction = document.getElementById("trackAction");
+      var musicHint = document.getElementById("musicHint");
+      var audioFade = 0;
 
-      var MELODY = [523.25, 659.25, 783.99, 1046.5, 880.0, 783.99, 659.25, 587.33];
-
-      function ensureAudio() {
-        if (!music.ctx) {
-          var AudioContextClass = window.AudioContext || window.webkitAudioContext;
-          if (!AudioContextClass) return false;
-
-          music.ctx = new AudioContextClass();
-          music.master = music.ctx.createGain();
-          music.master.gain.value = 0.055;
-          music.master.connect(music.ctx.destination);
-        }
-
-        if (music.ctx.state === "suspended") {
-          music.ctx.resume();
-        }
-
-        return true;
+      function updateTrackState() {
+        var playing = siteAudio && !siteAudio.paused && !siteAudio.ended;
+        trackAction.textContent = playing ? "暂停" : "播放";
+        el.musicBtn.classList.toggle("is-off", !playing);
+        el.musicBtn.setAttribute(
+          "aria-label",
+          playing ? "正在播放，点击选歌" : "音乐，点击选歌"
+        );
       }
 
-      function playNote(frequency, time, duration) {
-        var ctx = music.ctx;
-        var osc = ctx.createOscillator();
-        var gain = ctx.createGain();
-
-        osc.type = "triangle";
-        osc.frequency.value = frequency;
-        gain.gain.setValueAtTime(0.0001, time);
-        gain.gain.exponentialRampToValueAtTime(0.9, time + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
-
-        osc.connect(gain);
-        gain.connect(music.master);
-        osc.start(time);
-        osc.stop(time + duration + 0.05);
+      function openMusicSheet() {
+        musicSheet.classList.add("is-open");
+        musicSheet.setAttribute("aria-hidden", "false");
+        updateTrackState();
       }
 
-      function scheduleMusic() {
-        if (!music.ctx || music.muted) return;
+      function closeMusicSheet() {
+        musicSheet.classList.remove("is-open");
+        musicSheet.setAttribute("aria-hidden", "true");
+      }
 
-        var now = music.ctx.currentTime;
+      function fadeSiteAudio(target, duration) {
+        window.cancelAnimationFrame(audioFade);
+        var startedAt = performance.now();
+        var from = siteAudio.volume;
 
-        while (music.nextTime < now + 0.25) {
-          var note = MELODY[music.step % MELODY.length];
-          playNote(note, music.nextTime, 0.62);
-
-          if (music.step % 4 === 0) {
-            playNote(note / 2, music.nextTime, 0.9);
+        function step(now) {
+          var progress = Math.min(1, (now - startedAt) / duration);
+          siteAudio.volume = from + (target - from) * progress;
+          if (progress < 1) {
+            audioFade = window.requestAnimationFrame(step);
           }
-
-          music.nextTime += 0.52;
-          music.step += 1;
-        }
-      }
-
-      function startMusic() {
-        if (music.muted || !ensureAudio()) return;
-
-        if (!music.timer) {
-          music.nextTime = music.ctx.currentTime + 0.08;
-          music.timer = window.setInterval(scheduleMusic, 120);
-          scheduleMusic();
         }
 
-        updateMusicButton();
+        audioFade = window.requestAnimationFrame(step);
       }
 
-      function stopMusic() {
-        if (music.timer) {
-          window.clearInterval(music.timer);
-          music.timer = 0;
+      function playSiteAudio() {
+        siteAudio.currentTime = 0;
+        siteAudio.volume = 0.04;
+
+        var promise = siteAudio.play();
+
+        if (promise && promise.then) {
+          promise.then(function () {
+            fadeSiteAudio(0.55, 2400);
+            musicHint.hidden = true;
+            updateTrackState();
+          }).catch(function () {
+            musicHint.hidden = false;
+            showToast("这首歌暂时放不了，先用网易云听吧~");
+            updateTrackState();
+          });
+        } else {
+          fadeSiteAudio(0.55, 2400);
+          updateTrackState();
         }
-        updateMusicButton();
-      }
-
-      function updateMusicButton() {
-        var on = !music.muted && !!music.timer;
-        el.musicIcon.textContent = on ? "♪" : "♪";
-        el.musicBtn.classList.toggle("is-off", !on);
-        el.musicBtn.setAttribute("aria-label", on ? "关闭音乐" : "开启音乐");
       }
 
       el.musicBtn.addEventListener("click", function (event) {
         event.stopPropagation();
-        music.muted = !music.muted;
-        safeSet(CONFIG.storage.musicMuted, music.muted ? "1" : "0");
+        openMusicSheet();
+      });
 
-        if (music.muted) {
-          stopMusic();
-          showToast("音乐已关闭");
+      musicTrack.addEventListener("click", function () {
+        if (!siteAudio) return;
+
+        if (siteAudio.paused) {
+          playSiteAudio();
         } else {
-          startMusic();
-          showToast("音乐已开启");
+          siteAudio.pause();
+          updateTrackState();
         }
       });
 
-      document.addEventListener("visibilitychange", function () {
-        if (document.hidden) {
-          if (music.ctx && music.ctx.state === "running") {
-            music.ctx.suspend();
-          }
-        } else if (!music.muted && music.timer && music.ctx) {
-          music.ctx.resume();
-        }
+      musicClose.addEventListener("click", closeMusicSheet);
+
+      musicSheet.addEventListener("click", function (event) {
+        if (event.target === musicSheet) closeMusicSheet();
       });
 
-      var firstTouchDone = false;
-
-      function onFirstTouch() {
-        if (firstTouchDone) return;
-        firstTouchDone = true;
-        startMusic();
-      }
-
-      document.addEventListener("pointerdown", onFirstTouch, { once: true });
-      document.addEventListener("touchstart", onFirstTouch, { once: true, passive: true });
+      siteAudio.addEventListener("play", updateTrackState);
+      siteAudio.addEventListener("pause", updateTrackState);
+      siteAudio.addEventListener("error", function () {
+        if (musicSheet.classList.contains("is-open")) {
+          showToast("音频文件缺失或格式不支持，先用网易云听吧~");
+        }
+      });
 
       /* ============================================================
        * 启动
@@ -5688,7 +5945,7 @@
         renderSurprise(null);
         renderBirthdayModule();
         renderBirthdayGrid();
-        updateMusicButton();
+        updateTrackState();
 
         var hash = window.location.hash.replace("#", "");
 
