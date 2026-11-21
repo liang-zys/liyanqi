@@ -1341,6 +1341,171 @@
       letter-spacing: 0.08em;
     }
 
+    .modal-tag {
+      display: inline-block;
+      margin: 0 0 8px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(255, 158, 203, 0.16);
+      color: #c04f7e;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+    }
+
+    .btn[hidden],
+    [hidden] {
+      display: none !important;
+    }
+
+    /* 回忆密码 */
+    .pass-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 46;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(30, 45, 60, 0.36);
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        opacity 0.28s ease,
+        visibility 0s linear 0.28s;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .pass-modal.is-open {
+      opacity: 1;
+      visibility: visible;
+      transition:
+        opacity 0.28s ease,
+        visibility 0s linear 0s;
+    }
+
+    .pass-card {
+      width: min(100%, 330px);
+      padding: 26px 22px 20px;
+      border-radius: 26px;
+      background: linear-gradient(180deg, #fffdf9 0%, #f4f1ea 100%);
+      box-shadow: 0 30px 70px rgba(30, 45, 60, 0.28);
+      text-align: center;
+      transform: translateY(14px) scale(0.97);
+      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+    }
+
+    .pass-modal.is-open .pass-card {
+      transform: none;
+    }
+
+    .pass-card.shake {
+      animation: passShake 0.42s ease;
+    }
+
+    @keyframes passShake {
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+      20% {
+        transform: translateX(-8px);
+      }
+      40% {
+        transform: translateX(7px);
+      }
+      60% {
+        transform: translateX(-5px);
+      }
+      80% {
+        transform: translateX(3px);
+      }
+    }
+
+    .pass-emoji {
+      display: grid;
+      place-items: center;
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: linear-gradient(160deg, #e8f1f7, #cfe2ef);
+      font-size: 28px;
+      box-shadow: 0 10px 24px rgba(110, 140, 160, 0.18);
+    }
+
+    .pass-card h3 {
+      margin: 0 0 6px;
+      font-size: 18px;
+      letter-spacing: 0.04em;
+    }
+
+    .pass-card p {
+      margin: 0 0 12px;
+      color: #7c8a93;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .pass-sub {
+      margin-bottom: 16px !important;
+    }
+
+    .pass-input {
+      width: 100%;
+      height: 48px;
+      padding: 0 14px;
+      border: 1.5px solid rgba(150, 180, 200, 0.45);
+      border-radius: 14px;
+      background: #fff;
+      color: #3f4f58;
+      font-size: 18px;
+      letter-spacing: 0.32em;
+      text-align: center;
+      outline: none;
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .pass-input:focus {
+      border-color: #8fb4cc;
+      box-shadow: 0 0 0 4px rgba(143, 180, 204, 0.16);
+    }
+
+    .pass-error {
+      margin: 10px 0 0 !important;
+      color: #c0392b !important;
+      font-size: 11px !important;
+      line-height: 1.5;
+      letter-spacing: 0.01em;
+    }
+
+    .pass-submit {
+      width: 100%;
+      min-height: 48px;
+      margin-top: 14px;
+    }
+
+    .pass-note {
+      margin: 12px 0 0 !important;
+      color: rgba(110, 125, 135, 0.7) !important;
+      font-size: 10.5px !important;
+      letter-spacing: 0.08em;
+    }
+
+    .memory-lock {
+      flex: 0 0 auto;
+      width: 44px;
+      height: 44px;
+      margin-left: auto;
+      border-radius: 50%;
+      color: #7c8a93;
+      font-size: 18px;
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow-soft);
+    }
+
     /* ---------------- 音乐按钮 / 选歌面板 ---------------- */
     .music-sheet {
       position: fixed;
@@ -1671,6 +1836,7 @@
       <header class="sub-head">
         <button class="icon-btn" type="button" data-back aria-label="返回">‹</button>
         <div class="sub-title">这些我都会帮你记住哦~<span>一年一格，等我们一起填满</span></div>
+        <button class="memory-lock" id="memoryLock" type="button" aria-label="锁定回忆">🔒</button>
       </header>
       <div class="memory-grid" id="memoryGrid"></div>
       <p class="grid-note">目前还没有解锁，等我们一起经历。</p>
@@ -1710,13 +1876,36 @@
     <div class="modal" id="modal" aria-hidden="true">
       <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal-emoji" id="modalEmoji" aria-hidden="true">💌</div>
+        <p class="modal-tag" id="modalTag" hidden>今天是生理期哦</p>
         <h3 id="modalTitle">今天也想你啦</h3>
         <p id="modalText">要不要收下今天的小惊喜？</p>
         <div class="modal-actions">
           <button class="btn btn-ghost" id="modalNo" type="button">否</button>
           <button class="btn btn-primary" id="modalYes" type="button">是</button>
         </div>
-        <p class="modal-note">今天只会有这一条问候</p>
+        <p class="modal-note" id="modalNote">今天只会有这一条问候</p>
+      </div>
+    </div>
+
+    <!-- ========== 回忆密码 ========== -->
+    <div class="pass-modal" id="passModal" aria-hidden="true">
+      <div class="pass-card" id="passCard" role="dialog" aria-modal="true" aria-labelledby="passTitle">
+        <div class="pass-emoji" aria-hidden="true">🔐</div>
+        <h3 id="passTitle">宝宝请输入8位密码~</h3>
+        <p class="pass-sub">就是你的生日 😊</p>
+        <input
+          class="pass-input"
+          id="passInput"
+          type="tel"
+          inputmode="numeric"
+          maxlength="8"
+          placeholder="8 位数字"
+          autocomplete="off"
+          aria-label="回忆密码"
+        />
+        <p class="pass-error" id="passError" hidden>Please leave my girlfriend's website now</p>
+        <button class="btn btn-primary pass-submit" id="passSubmit" type="button">进去看看</button>
+        <p class="pass-note">这些可不能被别人看见~</p>
       </div>
     </div>
 
@@ -5101,7 +5290,9 @@
         storage: {
           messages: "her_site_messages_v1",
           popupDate: "her_site_popup_date_v1",
-          musicMuted: "her_site_music_muted_v1"
+          musicMuted: "her_site_music_muted_v1",
+          blessingHistory: "her_site_blessing_history_v1",
+          memoriesUnlocked: "her_site_memories_unlocked_v1"
         }
       };
 
@@ -5118,6 +5309,13 @@
         modalText: document.getElementById("modalText"),
         modalYes: document.getElementById("modalYes"),
         modalNo: document.getElementById("modalNo"),
+        modalTag: document.getElementById("modalTag"),
+        modalNote: document.getElementById("modalNote"),
+        passModal: document.getElementById("passModal"),
+        passCard: document.getElementById("passCard"),
+        passInput: document.getElementById("passInput"),
+        passError: document.getElementById("passError"),
+        passSubmit: document.getElementById("passSubmit"),
         chatCard: document.getElementById("chatCard"),
         chatList: document.getElementById("chatList"),
         chatForm: document.getElementById("chatForm"),
@@ -5126,6 +5324,7 @@
         birthdayGrid: document.getElementById("birthdayGrid"),
         memoryGrid: document.getElementById("memoryGrid"),
         memoryModule: document.getElementById("memoryModule"),
+        memoryLock: document.getElementById("memoryLock"),
         surpriseBtn: document.getElementById("surpriseBtn"),
         surpriseTag: document.getElementById("surpriseTag"),
         surpriseTitle: document.getElementById("surpriseTitle"),
@@ -5335,6 +5534,11 @@
       function showScreen(name, updateHash) {
         if (SCREEN_IDS.indexOf(name) === -1) name = "home";
 
+        if (name === "memories" && !isMemoryUnlocked()) {
+          openPassModal();
+          return;
+        }
+
         var previousScreen = currentScreen;
         currentScreen = name;
         document.body.setAttribute("data-screen", name);
@@ -5393,17 +5597,143 @@
       /* ============================================================
        * 每日弹窗：生日 > 生理期 > 默认，每天只弹一次
        * ============================================================ */
-      var DAILY_LINES = [
-        "今天也要开开心心的呀。",
-        "刚刚路过一家店，突然很想带你去。",
-        "想把今天的第一句早安留给你。",
-        "今天有没有好好吃饭？",
-        "不用很厉害，你在我这里永远是第一名。",
-        "想你的时候，连风都是甜的。",
-        "今天也是被我惦记的一天。"
-      ];
+      /* ============================================================
+       * 祝福语：优先读 祝福语.txt，读不到就用内置默认
+       * ============================================================ */
+      var DEFAULT_BLESSINGS = {
+        daily: [
+          "今天也要开开心心的呀，烦恼都交给我。",
+          "早上醒来先喝口水，再想我。",
+          "你今天的可爱额度已经超标了。",
+          "不管今天顺不顺利，我都在你这边。",
+          "想你这件事，今天也没有偷懒。",
+          "记得好好吃饭，别拿零食糊弄自己。",
+          "如果累了就休息，天塌下来有我顶着。",
+          "今天也想把最好的都留给你。",
+          "你笑起来的时候，我这边天气就晴了。",
+          "不用很厉害，你在我这里永远是第一名。",
+          "刚刚路过一家店，突然很想带你去。",
+          "今天的第一句早安，还是想留给你。",
+          "你负责开心，我负责让你开心。",
+          "想和你一起浪费时间，浪费一整天。",
+          "今天也偷偷多喜欢了你一点。",
+          "有你在，普通的一天也值得纪念。",
+          "记得抬头看看天，也记得看看我。",
+          "你不用改变什么，做你自己就很好。",
+          "今天也是被你拿捏的一天。",
+          "晚上早点睡，梦里见也可以。",
+          "你在我这里，永远有特权。",
+          "今天想牵你的手，走慢一点。",
+          "世界很吵，我只想听你说话。",
+          "别皱眉啦，皱久了会不好看。",
+          "今天也很爱你，比昨天多一点点。"
+        ],
+        period: [
+          "今天肚子疼就躺着，别硬撑，我给你揉揉。",
+          "冰的、辣的今天都先放一放，听话。",
+          "热水袋记得充上，红糖姜茶也可以来一杯。",
+          "今天可以理直气壮地偷懒，我批准了。",
+          "不舒服就告诉我，别一个人忍着。",
+          "今天什么都不用做，把自己照顾好就行。"
+        ]
+      };
+
+      var blessings = DEFAULT_BLESSINGS;
+      var blessingsReady = Promise.resolve(DEFAULT_BLESSINGS);
+
+      function parseBlessings(text) {
+        var result = { daily: [], period: [] };
+        var current = "";
+        var lines = String(text || "").split(/\r?\n/);
+
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (!line || line.charAt(0) === "#") continue;
+
+          if (line === "[平时]" || line.toLowerCase() === "[daily]") {
+            current = "daily";
+            continue;
+          }
+          if (line === "[生理期]" || line.toLowerCase() === "[period]") {
+            current = "period";
+            continue;
+          }
+          if (!current) continue;
+
+          result[current].push(line);
+        }
+
+        return result;
+      }
+
+      function loadBlessings() {
+        if (typeof fetch !== "function") return Promise.resolve(DEFAULT_BLESSINGS);
+
+        return fetch("祝福语.txt", { cache: "no-store" })
+          .then(function (response) {
+            if (!response.ok) throw new Error("no blessings file");
+            return response.text();
+          })
+          .then(function (text) {
+            var parsed = parseBlessings(text);
+            if (!parsed.daily.length || !parsed.period.length) {
+              throw new Error("empty blessings");
+            }
+            blessings = parsed;
+            return parsed;
+          })
+          .catch(function () {
+            blessings = DEFAULT_BLESSINGS;
+            return DEFAULT_BLESSINGS;
+          });
+      }
+
+      var HISTORY_MONTH = 30 * 24 * 60 * 60 * 1000;
+
+      function readHistory() {
+        try {
+          return JSON.parse(safeGet(CONFIG.storage.blessingHistory) || "{}") || {};
+        } catch (error) {
+          return {};
+        }
+      }
+
+      function saveHistory(history) {
+        safeSet(CONFIG.storage.blessingHistory, JSON.stringify(history));
+      }
+
+      function pickBlessing(pool) {
+        var lines = blessings[pool] && blessings[pool].length
+          ? blessings[pool]
+          : DEFAULT_BLESSINGS[pool];
+        var history = readHistory();
+        var now = Date.now();
+
+        var available = lines.filter(function (line) {
+          return !history[line] || now - history[line] > HISTORY_MONTH;
+        });
+
+        if (!available.length) {
+          for (var i = 0; i < lines.length; i++) {
+            delete history[lines[i]];
+          }
+          available = lines.slice();
+        }
+
+        var picked = available[Math.floor(Math.random() * available.length)];
+        history[picked] = now;
+
+        Object.keys(history).forEach(function (key) {
+          if (now - history[key] > HISTORY_MONTH * 2) delete history[key];
+        });
+        saveHistory(history);
+
+        return picked;
+      }
 
       var dailyType = "default";
+      var popupMode = "blessing";
+      var birthdayPopupPending = false;
 
       function pickDailyType() {
         var now = new Date();
@@ -5419,64 +5749,168 @@
         return "default";
       }
 
-      function dailyCopy(type) {
-        if (type === "birthday") {
-          return {
-            emoji: "🎂",
-            title: "生日快乐呀",
-            text: "今天是你来到这个世界的日子。我准备了一点小惊喜，要看看吗？"
-          };
-        }
-        if (type === "period") {
-          return {
-            emoji: "🧸",
-            title: "这几天要照顾好自己哦",
-            text: "肚子疼就躺一会儿，别逞强。我给你留了几句贴心话，要看吗？"
-          };
-        }
-        return {
-          emoji: "💌",
-          title: "今天也想你啦",
-          text: randomPick(DAILY_LINES) + " 要收下今天的小惊喜吗？"
-        };
-      }
-
-      function openDailyPopup(force) {
+      function openBlessingPopup(force, forceType) {
         var today = dateKey(new Date());
         var shown = safeGet(CONFIG.storage.popupDate);
 
         if (!force && shown === today) return;
 
-        dailyType = pickDailyType();
-        var copy = dailyCopy(dailyType);
+        var type = forceType || pickDailyType();
+        dailyType = type;
+        var isPeriod = type === "period";
+        var copy = isPeriod
+          ? {
+              emoji: "🧸",
+              title: "今天也要好好照顾自己",
+              tag: "今天是生理期哦",
+              note: "不许逞强，也不许偷偷喝冰的。"
+            }
+          : {
+              emoji: "💌",
+              title: "今天也想对你说",
+              tag: "",
+              note: "每天只来打扰你一次。"
+            };
+
+        popupMode = "blessing";
+        birthdayPopupPending = type === "birthday";
 
         el.modalEmoji.textContent = copy.emoji;
+        el.modalTag.hidden = !copy.tag;
+        el.modalTag.textContent = copy.tag;
         el.modalTitle.textContent = copy.title;
-        el.modalText.textContent = copy.text;
+        el.modalText.textContent = pickBlessing(isPeriod ? "period" : "daily");
+        el.modalNote.textContent = copy.note;
+        el.modalNo.hidden = true;
+        el.modalYes.textContent = "收下啦";
         el.modal.classList.add("is-open");
         el.modal.setAttribute("aria-hidden", "false");
 
         safeSet(CONFIG.storage.popupDate, today);
       }
 
-      function closeDailyPopup() {
+      function openBirthdayPopup() {
+        popupMode = "birthday";
+
+        el.modalEmoji.textContent = "🎂";
+        el.modalTag.hidden = true;
+        el.modalTitle.textContent = "生日快乐呀";
+        el.modalText.textContent = "今天是你来到这个世界的日子。我准备了一点小惊喜，要看看吗？";
+        el.modalNote.textContent = "今天还有一份生日惊喜。";
+        el.modalNo.hidden = false;
+        el.modalYes.textContent = "是";
+        el.modal.classList.add("is-open");
+        el.modal.setAttribute("aria-hidden", "false");
+      }
+
+      function closeModal() {
         el.modal.classList.remove("is-open");
         el.modal.setAttribute("aria-hidden", "true");
       }
 
+      function afterBlessingClosed() {
+        closeModal();
+
+        if (birthdayPopupPending) {
+          birthdayPopupPending = false;
+          window.setTimeout(openBirthdayPopup, 280);
+        }
+      }
+
       el.modalYes.addEventListener("click", function () {
-        closeDailyPopup();
-        showScreen(pageForType(dailyType));
+        if (popupMode === "birthday") {
+          closeModal();
+          showScreen("birthday");
+        } else {
+          afterBlessingClosed();
+        }
       });
 
       el.modalNo.addEventListener("click", function () {
-        closeDailyPopup();
-        showScreen("home");
+        if (popupMode === "birthday") {
+          closeModal();
+          showScreen("home");
+        } else {
+          afterBlessingClosed();
+        }
       });
 
       el.modal.addEventListener("click", function (event) {
-        if (event.target === el.modal) closeDailyPopup();
+        if (event.target !== el.modal) return;
+
+        if (popupMode === "birthday") {
+          closeModal();
+        } else {
+          afterBlessingClosed();
+        }
       });
+
+      /* ============================================================
+       * 回忆密码
+       * ============================================================ */
+      var MEMORY_PASSWORD = "20101210";
+
+      function isMemoryUnlocked() {
+        return safeGet(CONFIG.storage.memoriesUnlocked) === "1";
+      }
+
+      function openPassModal() {
+        el.passError.hidden = true;
+        el.passInput.value = "";
+        el.passModal.classList.add("is-open");
+        el.passModal.setAttribute("aria-hidden", "false");
+        window.setTimeout(function () {
+          el.passInput.focus();
+        }, 260);
+      }
+
+      function closePassModal() {
+        el.passModal.classList.remove("is-open");
+        el.passModal.setAttribute("aria-hidden", "true");
+      }
+
+      function submitPass() {
+        var value = el.passInput.value.replace(/\s/g, "");
+
+        if (value === MEMORY_PASSWORD) {
+          safeSet(CONFIG.storage.memoriesUnlocked, "1");
+          closePassModal();
+          showScreen("memories");
+          return;
+        }
+
+        el.passError.hidden = false;
+        el.passCard.classList.remove("shake");
+        void el.passCard.offsetWidth;
+        el.passCard.classList.add("shake");
+        el.passInput.focus();
+        el.passInput.select();
+      }
+
+      el.passSubmit.addEventListener("click", submitPass);
+
+      el.passInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          submitPass();
+        }
+      });
+
+      el.passInput.addEventListener("input", function () {
+        el.passError.hidden = true;
+      });
+
+      el.passModal.addEventListener("click", function (event) {
+        if (event.target === el.passModal) closePassModal();
+      });
+
+      if (el.memoryLock) {
+        el.memoryLock.addEventListener("click", function () {
+          safeSet(CONFIG.storage.memoriesUnlocked, "");
+          showScreen("home");
+          showToast("回忆已经锁上啦");
+        });
+      }
 
       /* ============================================================
        * 首页按钮
@@ -6082,9 +6516,15 @@
 
         showScreen("home", false);
 
-        window.setTimeout(function () {
-          openDailyPopup(false);
-        }, 650);
+        blessingsReady = loadBlessings();
+
+        if (!document.hidden) {
+          blessingsReady.then(function () {
+            window.setTimeout(function () {
+              openBlessingPopup(false);
+            }, 650);
+          });
+        }
       }
 
       init();
@@ -6093,10 +6533,24 @@
       window.herSite = {
         resetPopup: function () {
           safeSet(CONFIG.storage.popupDate, "");
-          showToast("今日弹窗已重置");
+          safeSet(CONFIG.storage.blessingHistory, "{}");
+          showToast("今日弹窗和抽签记录已重置");
         },
         openPopup: function () {
-          openDailyPopup(true);
+          openBlessingPopup(true);
+        },
+        previewPopup: function (type) {
+          if (type === "birthday") {
+            openBlessingPopup(true, "birthday");
+          } else if (type === "period") {
+            openBlessingPopup(true, "period");
+          } else {
+            openBlessingPopup(true, "default");
+          }
+        },
+        lockMemories: function () {
+          safeSet(CONFIG.storage.memoriesUnlocked, "");
+          showToast("回忆已锁定");
         }
       };
     })();
